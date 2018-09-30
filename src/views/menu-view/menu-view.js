@@ -3,16 +3,18 @@ import {PageViewElement} from '../page-view-element';
 import {FirestoreMixin} from '../../mixins/firestore-mixin/firestore-mixin';
 import {SharedStyles} from '../../styles/shared-styles';
 import {repeat} from 'lit-html/directives/repeat'
-import './single-restaurant'
+import './single-item'
 
-class RestaurantsView extends FirestoreMixin(PageViewElement) {
+class MenuView extends FirestoreMixin(PageViewElement) {
     static get properties() {
         return {
-            restaurants: {
+            uid: String,
+            menu: {
                 type: Array,
-                collection: 'restaurants',
+                collection: 'restaurants/{uid}/menu',
                 live: true
-            }
+            },
+            argsArray: Array
         }
     }
 
@@ -31,7 +33,7 @@ class RestaurantsView extends FirestoreMixin(PageViewElement) {
                     grid-template-columns: repeat(auto-fill, 300px);
                 }
 
-                single-restaurant {
+                single-item {
                     background-color: var(--app-fill-color);
                 }
 
@@ -46,23 +48,32 @@ class RestaurantsView extends FirestoreMixin(PageViewElement) {
                 }
             </style>
 
-            <div class="header">Restaurants</div>
+            <div class="header">Menu</div>
             <div class="grid-container">
-                ${this.restaurants ? (repeat(this.restaurants, (restaurant) => html `
-                    <single-restaurant @click="${_ => this._onSingleRestaurantClick(restaurant)}" 
-                        .name="${restaurant.name}"
-                        .cuisine="${restaurant.cuisine}"
-                        .image="${restaurant.image}">
-                    </single-restaurant>
+                ${this.menu ? (repeat(this.menu, (item) => html `
+                    <single-item @click="${_ => this._onSingleItemClick(item)}" 
+                        .name="${item.name}">
+                    </single-item>
                 `)) : ""}
             </div>
+            
         `;
     }
 
-    _onSingleRestaurantClick(restaurant) {
-        this.dispatchEvent(new CustomEvent('restaurant-click', {detail: restaurant}))
+    updated(changedProperties) {
+        const uidUpdated = changedProperties.has('uid');
+        if (uidUpdated && this.argsArray) {
+            this.argsArray.forEach(argsObject => {
+                var argsArr = argsObject.args
+                this._firestoreUpdateBinding(argsObject.name, ...argsArr.map(x => this[x]))
+            });
+        }
+    }
+
+    _onSingleItemClick(item) {
+        this.dispatchEvent(new CustomEvent('item-click', {detail: item}));
     }
 
 }
 
-customElements.define('restaurants-view', RestaurantsView);
+customElements.define('menu-view', MenuView);

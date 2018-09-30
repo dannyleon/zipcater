@@ -91,7 +91,6 @@ export const FirestoreMixin = (baseElement) => class extends baseElement {
         super.connectedCallback();
     }
     _firestoreBind(name, options) {
-        console.log('firestore bind:', name, '/', options)
         const defaults = {
             live: false,
             observes: [],
@@ -102,8 +101,6 @@ export const FirestoreMixin = (baseElement) => class extends baseElement {
             config.doc ? 'doc' : config.collection ? 'collection' : undefined;
         this._firestoreProps[name] = config;
         const args = config.props.concat(config.observes);
-        console.log('args:', args)
-        
         
         if (args.length > 0) {
             // Create a method observer that will be called every time
@@ -120,18 +117,13 @@ export const FirestoreMixin = (baseElement) => class extends baseElement {
                 args: args,
                 name: name
             }
-            this.argsArray.push(argsObject)
-            // this.argsObject = {
-            //     args: args,
-            //     name: name
-            // };
+            this.argsArray.push(argsObject);
         } else {
             this._firestoreUpdateBinding(name, ...args.map(x => this[x]));
         }
     }
 
     _firestoreUpdateBinding(name, ...args) {
-        console.log('firestore update binding:', name)
         this._firestoreUnlisten(name);
         const config = this._firestoreProps[name];
         const isDefined = (x) => x !== undefined;
@@ -143,8 +135,6 @@ export const FirestoreMixin = (baseElement) => class extends baseElement {
         if (propArgsReady && observesArgsReady) {
             const collPath = stitch(config.literals, propArgs);
             const assigner = this._firestoreAssigner(name, config);
-            console.log('coll path:', collPath)
-            console.log('assigner:', assigner)
             let ref = this.db[config.type](collPath);
             this[name + 'Ref'] = ref;
             if (config.query) {
@@ -195,7 +185,6 @@ export const FirestoreMixin = (baseElement) => class extends baseElement {
         this[name] = iDoc(snap);
     }
     _firestoreAssignCollection(name, snap) {
-        console.log('firestore assign collection:', name, "/", snap)
         const propertyValueIsArray = Array.isArray(this[name])
         const allDocumentsChanged = snap.docs.length === snap.docChanges().length;
         if (propertyValueIsArray && allDocumentsChanged === false) {
@@ -218,7 +207,6 @@ export const FirestoreMixin = (baseElement) => class extends baseElement {
                     default:
                         throw new Error(`Unhandled document change: ${change.type}.`);
                 }
-                console.log('requesting render...')
                 this.requestUpdate();
             });
         } else {

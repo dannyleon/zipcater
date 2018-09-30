@@ -16,18 +16,21 @@ import { installRouter } from 'pwa-helpers/router.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
 
 // These are the elements needed by this element.
-import '@polymer/app-layout/app-drawer/app-drawer.js';
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-scroll-effects/effects/waterfall.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import { menuIcon } from './my-icons.js';
+import { profileIcon, cartIcon } from './my-icons.js';
 import './components/snack-bar.js';
+import '@material/mwc-fab';
+import '@material/mwc-button';
+import { ButtonSharedStyles } from './styles/button-shared-styles.js';
 
 class MyApp extends LitElement {
   render() {
-    const {appTitle, _page, _drawerOpened, _snackbarOpened, _offline} = this;
+    const {_page, _snackbarOpened, _offline} = this;
     // Anything that's related to rendering should be done in here.
     return html`
+    ${ButtonSharedStyles}
     <style>
       :host {
         --app-drawer-width: 256px;
@@ -43,17 +46,15 @@ class MyApp extends LitElement {
         --app-dark-text-color: #000000;
         --app-fill-color: #EEEEEE;
 
+        --app-section-even-color: #f7f7f7;
+        --app-section-odd-color: white;
+
         --app-header-background-color: var(--app-primary-color);
         --app-header-text-color: var(--app-dark-text-color);
         --app-header-selected-color: var(--app-secondary-color);
 
-        --app-section-even-color: #f7f7f7;
-        --app-section-odd-color: white;
-
-
-        --app-drawer-background-color: #293237;
-        --app-drawer-text-color: var(--app-light-text-color);
-        --app-drawer-selected-color: #78909C;
+        --app-footer-background-color: #293237;
+        --app-footer-text-color: var(--app-light-text-color);
       }
 
       app-header {
@@ -87,53 +88,6 @@ class MyApp extends LitElement {
         font-weight: 800;
       }
 
-      .toolbar-list {
-        display: none;
-      }
-
-      .toolbar-list > a {
-        display: inline-block;
-        color: var(--app-header-text-color);
-        text-decoration: none;
-        line-height: 30px;
-        padding: 4px 24px;
-      }
-
-      .toolbar-list > a[selected] {
-        color: var(--app-header-selected-color);
-        border-bottom: 4px solid var(--app-header-selected-color);
-      }
-
-      .menu-btn {
-        background: none;
-        border: none;
-        fill: var(--app-header-text-color);
-        cursor: pointer;
-        height: 44px;
-        width: 44px;
-      }
-
-      .drawer-list {
-        box-sizing: border-box;
-        width: 100%;
-        height: 100%;
-        padding: 24px;
-        background: var(--app-drawer-background-color);
-        position: relative;
-      }
-
-      .drawer-list > a {
-        display: block;
-        text-decoration: none;
-        color: var(--app-drawer-text-color);
-        line-height: 40px;
-        padding: 0 24px;
-      }
-
-      .drawer-list > a[selected] {
-        color: var(--app-drawer-selected-color);
-      }
-
       /* Workaround for IE11 displaying <main> as inline */
       main {
         display: block;
@@ -153,60 +107,51 @@ class MyApp extends LitElement {
       }
 
       footer {
-        padding: 24px;
-        background: var(--app-drawer-background-color);
-        color: var(--app-drawer-text-color);
+        padding: 4px;
+        background: var(--app-footer-background-color);
+        color: var(--app-footer-text-color);
         text-align: center;
+      }
+
+      .profile-icon svg {
+        height: 32px;
+        width: 32px;
+      }
+
+      mwc-fab {
+        --mdc-theme-secondary: var(--app-secondary-color);
+        position: fixed;
+        bottom: 16px;
+        right: 16px;
       }
 
       /* Wide layout: when the viewport width is bigger than 460px, layout
       changes to a wide layout. */
       @media (min-width: 460px) {
-        .toolbar-list {
-          display: block;
-        }
-
-        .menu-btn {
-          display: none;
-        }
-
-        .main-content {
-          padding-top: 107px;
-        }
       }
     </style>
 
     <!-- Header -->
     <app-header condenses reveals effects="waterfall">
       <app-toolbar class="toolbar-top">
-        <button class="menu-btn" title="Menu" @click="${_ => this._updateDrawerState(true)}">${menuIcon}</button>
         <div main-title>
           <span class="left">nine2five</span><span class="right">catering</span>
         </div>
+        <button class="profile-icon">${profileIcon}</button>
       </app-toolbar>
-
-      <!-- This gets hidden on a small screen-->
-      <nav class="toolbar-list">
-        <a ?selected="${_page === 'restaurants'}" href="/restaurants">Restaurants</a>
-      </nav>
     </app-header>
-
-    <!-- Drawer content -->
-    <app-drawer .opened="${_drawerOpened}"
-        @opened-changed="${e => this._updateDrawerState(e.target.opened)}">
-      <nav class="drawer-list">
-        <a ?selected="${_page === 'restaurants'}" href="/restaurants">Restaurants</a>
-      </nav>
-    </app-drawer>
 
     <!-- Main content -->
     <main role="main" class="main-content">
-      <restaurants-view class="page" ?active="${_page === 'restaurants'}"></restaurants-view>
+      <restaurants-view class="page" ?active="${_page === 'restaurants'}" @restaurant-click="${e => this._onRestaurantClick(e.detail)}"></restaurants-view>
+      <menu-view id="menu" class="page" ?active="${_page === 'menu'}" @item-click="${e => this._onItemClick(e.detail)}"></menu-view>
       <error-view class="page" ?active="${_page === 'error'}"></error-view>
     </main>
 
+    <mwc-fab>${cartIcon}</mwc-fab>
+
     <footer>
-      <p>Made with &hearts; by the Polymer team.</p>
+      <p>v0.1.0</p>
     </footer>
 
     <snack-bar ?active="${_snackbarOpened}">
@@ -271,13 +216,22 @@ class MyApp extends LitElement {
 
   _locationChanged() {
     const path = window.decodeURIComponent(window.location.pathname);
-    const page = path === '/' ? 'restaurants' : path.slice(1);
-    this._loadPage(page);
-    // Any other info you might want to extract from the path (like page type),
-    // you can do here.
+    const splitPath = path.split('/');
+    var page;
 
-    // Close the drawer - in case the *path* change came from a link in the drawer.
-    this._updateDrawerState(false);
+    let mainPage = splitPath[1];
+    let uid = splitPath[2];
+    let subPage = splitPath[3];
+    
+    if (path === '/') {
+      page = 'restaurants';
+    } else if (subPage) {
+      page = subPage;
+    } else {
+      page = mainPage;
+    }
+    
+    this._loadPage(page, uid);
   }
 
   _updateDrawerState(opened) {
@@ -286,7 +240,7 @@ class MyApp extends LitElement {
     }
   }
 
-  _loadPage(page) {
+  _loadPage(page, uid) {
     switch(page) {
       case 'restaurants':
         import('./views/restaurants-view/restaurants-view.js').then((module) => {
@@ -294,12 +248,26 @@ class MyApp extends LitElement {
           // navigating to view1 after my-view1.js is loaded.
         });
         break;
+      case 'menu':
+        import('./views/menu-view/menu-view.js').then((module) => {
+          this.shadowRoot.querySelector('#menu').uid = uid;
+        });
+        break;
       default:
         page = 'error';
         import('./views/error-view/error-view.js');
     }
-
     this._page = page;
+  }
+
+  _onRestaurantClick(restaurant) {
+    console.log('on restaurant click event:', restaurant);
+    window.history.pushState({}, '', `/restaurants/${restaurant.__id__}/menu`);
+    this._locationChanged();
+  }
+
+  _onItemClick(item) {
+    console.log('on item click event:', item);
   }
 }
 
