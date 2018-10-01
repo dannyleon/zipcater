@@ -15,10 +15,12 @@ import { installOfflineWatcher } from 'pwa-helpers/network.js';
 import { installRouter } from 'pwa-helpers/router.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
 
-// These are the elements needed by this element.
+//Legacy polymer-element components, replace ASAP
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-scroll-effects/effects/waterfall.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+
+// These are the elements needed by this element.
 import { profileIcon, cartIcon } from './my-icons.js';
 import './components/snack-bar.js';
 import '@material/mwc-fab';
