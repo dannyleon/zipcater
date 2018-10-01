@@ -3,7 +3,11 @@ import {LitElement, html} from '@polymer/lit-element';
 class SingleItem extends LitElement {
     static get properties() {
         return {
-            name: String
+            name: String,
+            description: String,
+            ingredients: Array,
+            defaultOption: String,
+            options: Object
         }
     }
 
@@ -15,10 +19,42 @@ class SingleItem extends LitElement {
     render() {
         return html`
             <style>
+                :host {
+                    border-radius: 5px;
+                    padding: 8px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+
+                .description {
+                    font-size: 12px;
+                }
+
+                .price {
+                    font-family: 'Roboto Mono', monospace;
+                }
             </style>
             
-            <div>${this.name}</div>
+            <div>
+                <div class="name">${this.name}</div>
+                <div class="description">${this._computeDescription(this.description, this.ingredients)}</div>
+            </div>
+            <div class="price">${this._computePrice(this.defaultOption, this.options)}</div>
         `;
+    }
+
+    _computeDescription(description, ingredients) {
+        if (description) {
+            return description;
+        } else if (ingredients) {
+            return ingredients.join(', ')
+        }
+    }
+
+    _computePrice(defaultOption, options) {
+        let rawPrice = options[defaultOption];
+        return `$${rawPrice.toFixed(2)}`;
     }
 
 }

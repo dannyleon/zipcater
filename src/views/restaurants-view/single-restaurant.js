@@ -21,13 +21,13 @@ class SingleRestaurant extends LitElement {
                     display: flex;
                     flex-direction: column;
                     align-items: flex-start;
-                    width: 300px;
+                    width: 250px;
                     border-radius: 5px;
                     overflow: hidden;
                 }
                 img {
-                    width: 300px;
-                    height: 225px;
+                    width: 250px;
+                    height: 165px;
                     object-fit: cover;
                 }
 

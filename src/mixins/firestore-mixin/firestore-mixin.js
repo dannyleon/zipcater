@@ -185,6 +185,7 @@ export const FirestoreMixin = (baseElement) => class extends baseElement {
         this[name] = iDoc(snap);
     }
     _firestoreAssignCollection(name, snap) {
+        console.log('snapshot:', snap.docs)
         const propertyValueIsArray = Array.isArray(this[name])
         const allDocumentsChanged = snap.docs.length === snap.docChanges().length;
         if (propertyValueIsArray && allDocumentsChanged === false) {
@@ -207,11 +208,11 @@ export const FirestoreMixin = (baseElement) => class extends baseElement {
                     default:
                         throw new Error(`Unhandled document change: ${change.type}.`);
                 }
-                this.requestUpdate();
+                this.requestUpdate(name);
             });
         } else {
             this[name] = snap.docs.map(iDoc);
-            this.requestUpdate();
+            this.requestUpdate(name);
         }
     }
 }

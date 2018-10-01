@@ -24,7 +24,6 @@ import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import { profileIcon, cartIcon } from './my-icons.js';
 import './components/snack-bar.js';
 import '@material/mwc-fab';
-import '@material/mwc-button';
 import { ButtonSharedStyles } from './styles/button-shared-styles.js';
 
 class MyApp extends LitElement {
@@ -50,6 +49,8 @@ class MyApp extends LitElement {
 
         --app-section-even-color: #f7f7f7;
         --app-section-odd-color: white;
+
+        --app-border-color: var(--app-dark-primary-color);
 
         --app-header-background-color: var(--app-primary-color);
         --app-header-text-color: var(--app-dark-text-color);
@@ -224,6 +225,10 @@ class MyApp extends LitElement {
     let mainPage = splitPath[1];
     let uid = splitPath[2];
     let subPage = splitPath[3];
+
+    const payload = {
+      uid: uid
+    }
     
     if (path === '/') {
       page = 'restaurants';
@@ -233,7 +238,7 @@ class MyApp extends LitElement {
       page = mainPage;
     }
     
-    this._loadPage(page, uid);
+    this._loadPage(page, payload);
   }
 
   _updateDrawerState(opened) {
@@ -242,7 +247,7 @@ class MyApp extends LitElement {
     }
   }
 
-  _loadPage(page, uid) {
+  _loadPage(page, payload) {
     switch(page) {
       case 'restaurants':
         import('./views/restaurants-view/restaurants-view.js').then((module) => {
@@ -252,7 +257,7 @@ class MyApp extends LitElement {
         break;
       case 'menu':
         import('./views/menu-view/menu-view.js').then((module) => {
-          this.shadowRoot.querySelector('#menu').uid = uid;
+          this.shadowRoot.querySelector('#menu').uid = payload.uid;
         });
         break;
       default:
