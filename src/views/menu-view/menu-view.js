@@ -2,9 +2,9 @@ import {html} from '@polymer/lit-element';
 import {PageViewElement} from '../page-view-element';
 import {FirestoreMixin} from '../../mixins/firestore-mixin/firestore-mixin';
 import {SharedStyles} from '../../styles/shared-styles';
-import {repeat} from 'lit-html/directives/repeat'
-import '../../components/mwc-tab/mwc-tab'
-import './single-item'
+import {repeat} from 'lit-html/directives/repeat';
+import '../../components/mwc-tab/mwc-tab';
+import './single-item';
 
 class MenuView extends FirestoreMixin(PageViewElement) {
     static get properties() {

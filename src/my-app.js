@@ -25,16 +25,17 @@ import { profileIcon, cartIcon } from './my-icons.js';
 import './components/snack-bar.js';
 import '@material/mwc-fab';
 import { ButtonSharedStyles } from './styles/button-shared-styles.js';
+import './components/sign-in-drawer/sign-in-drawer'
 
 class MyApp extends LitElement {
   render() {
-    const {_page, _snackbarOpened, _offline} = this;
+    const {_page, _snackbarOpened, _offline, _signInDrawerOpened} = this;
     // Anything that's related to rendering should be done in here.
     return html`
     ${ButtonSharedStyles}
     <style>
       :host {
-        --app-drawer-width: 256px;
+        --app-drawer-width: 320px;
         display: block;
 
         --app-primary-color: #fafafa;
@@ -143,9 +144,14 @@ class MyApp extends LitElement {
         <div main-title>
           <span class="left">nine2five</span><span class="right">catering</span>
         </div>
-        <button class="profile-icon">${profileIcon}</button>
+        <button @click="${_ => this._updateSignInDrawerState(true)}" class="profile-icon">${profileIcon}</button>
       </app-toolbar>
     </app-header>
+
+    <sign-in-drawer 
+      @opened-changed="${e => this._updateSignInDrawerState(e.detail.opened)}" 
+      .opened="${_signInDrawerOpened}">
+    </sign-in-drawer>
 
     <!-- Main content -->
     <main role="main" class="main-content">
@@ -155,7 +161,7 @@ class MyApp extends LitElement {
       <error-view class="page" ?active="${_page === 'error'}"></error-view>
     </main>
 
-    <mwc-fab>${cartIcon}</mwc-fab>
+    <mwc-fab ?hidden="${this._signInDrawerOpened}">${cartIcon}</mwc-fab>
 
     <snack-bar ?active="${_snackbarOpened}">
         You are now ${_offline ? 'offline' : 'online'}.</snack-bar>
@@ -166,18 +172,33 @@ class MyApp extends LitElement {
     return {
       appTitle: { type: String },
       _page: { type: String },
-      _drawerOpened: { type: Boolean },
       _snackbarOpened: { type: Boolean },
-      _offline: { type: Boolean }
+      _offline: { type: Boolean },
+      _signInDrawerOpened: { type: Boolean }
     }
   }
 
   constructor() {
     super();
-    this._drawerOpened = false;
+    this._signInDrawerOpened = false;
     // To force all event listeners for gestures to be passive.
     // See https://www.polymer-project.org/3.0/docs/devguide/settings#setting-passive-touch-gestures
     setPassiveTouchGestures(true);
+
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        let userDetails = {
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL
+        }
+        this.user = userDetails;
+        this.signedIn = true;
+      } else {
+        this.user = {};
+        this.signedIn = false;
+      }
+    });
   }
 
   firstUpdated() {
@@ -200,7 +221,7 @@ class MyApp extends LitElement {
 
   _layoutChanged(isWideLayout) {
     // The drawer doesn't make sense in a wide layout, so if it's opened, close it.
-    this._updateDrawerState(false);
+    this._updateSignInDrawerState(false);
   }
 
   _offlineChanged(offline) {
@@ -245,9 +266,9 @@ class MyApp extends LitElement {
     this._loadPage(page, payload);
   }
 
-  _updateDrawerState(opened) {
-    if (opened !== this._drawerOpened) {
-      this._drawerOpened = opened;
+  _updateSignInDrawerState(opened) {
+    if (opened !== this._signInDrawerOpened) {
+      this._signInDrawerOpened = opened;
     }
   }
 
