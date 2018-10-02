@@ -72,7 +72,7 @@ class MenuView extends FirestoreMixin(PageViewElement) {
                 .restaurant-details .name {
                     font-size: 40px;
                     font-family: 'Roboto Mono', monospace;
-                    line-height: 0.8;
+                    line-height: 1;
                 }
 
                 .restaurant-details .description {
@@ -80,10 +80,10 @@ class MenuView extends FirestoreMixin(PageViewElement) {
                 }
 
                 .restaurant-details .cuisine {
-                    color: var(--app-secondary-color);
-                    font-size: 14px;
-                    font-weight: 800;
+                    font-weight: 700;
+                    font-style: italic;
                     margin-bottom: 12px;
+                    font-size: 14px;
                 }
 
                 .category-toolbar {
@@ -119,7 +119,7 @@ class MenuView extends FirestoreMixin(PageViewElement) {
 
             <div class="grid-container">
                 ${this.menu ? (repeat(this._filterMenu(this.menu, this.selectedCategory), (item) => html `
-                    <single-item @click="${_ => this._onSingleItemClick(item)}" 
+                    <single-item @click="${_ => this._onSingleItemClick(item, this.uid)}" 
                         .name="${item.name}"
                         .description="${item.description}"
                         .ingredients="${item.ingredients}"
@@ -162,8 +162,8 @@ class MenuView extends FirestoreMixin(PageViewElement) {
         return categories;
     }
 
-    _onSingleItemClick(item) {
-        this.dispatchEvent(new CustomEvent('item-click', {detail: item}));
+    _onSingleItemClick(item, uid) {
+        this.dispatchEvent(new CustomEvent('item-click', {detail: {item: item, uid: uid}}));
     }
 
     _onTabClick(category) {

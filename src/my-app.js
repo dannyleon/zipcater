@@ -43,6 +43,7 @@ class MyApp extends LitElement {
         --app-secondary-color: #d50000;
         --app-light-secondary-color: #ff5131;
         --app-dark-secondary-color: #9b0000;
+        --app-tertiary-color: #FF9100;
         --app-light-text-color: #ffffff;
         --app-dark-text-color: #000000;
         --app-fill-color: #EEEEEE;
@@ -58,6 +59,8 @@ class MyApp extends LitElement {
 
         --app-footer-background-color: #293237;
         --app-footer-text-color: var(--app-light-text-color);
+
+        --app-button-background-color: var(--app-tertiary-color);
       }
 
       app-header {
@@ -98,7 +101,7 @@ class MyApp extends LitElement {
 
       .main-content {
         padding-top: 64px;
-        min-height: 100vh;
+        min-height: calc(100vh - 64px);
       }
 
       .page {
@@ -147,15 +150,12 @@ class MyApp extends LitElement {
     <!-- Main content -->
     <main role="main" class="main-content">
       <restaurants-view class="page" ?active="${_page === 'restaurants'}" @restaurant-click="${e => this._onRestaurantClick(e.detail)}"></restaurants-view>
-      <menu-view id="menu" class="page" ?active="${_page === 'menu'}" @item-click="${e => this._onItemClick(e.detail)}"></menu-view>
+      <menu-view id="menu" class="page" ?active="${_page === 'menu'}" @item-click="${e => this._onItemClick(e.detail.item, e.detail.uid)}"></menu-view>
+      <item-view id="item" class="page" ?active="${_page === 'item'}"></item-view>
       <error-view class="page" ?active="${_page === 'error'}"></error-view>
     </main>
 
     <mwc-fab>${cartIcon}</mwc-fab>
-
-    <footer>
-      <p>v0.1.0</p>
-    </footer>
 
     <snack-bar ?active="${_snackbarOpened}">
         You are now ${_offline ? 'offline' : 'online'}.</snack-bar>
@@ -225,13 +225,17 @@ class MyApp extends LitElement {
     let mainPage = splitPath[1];
     let uid = splitPath[2];
     let subPage = splitPath[3];
+    let iid = splitPath[4];
 
     const payload = {
-      uid: uid
+      uid: uid,
+      iid: iid
     }
     
     if (path === '/') {
       page = 'restaurants';
+    } else if (iid) {
+      page = 'item';
     } else if (subPage) {
       page = subPage;
     } else {
@@ -260,6 +264,13 @@ class MyApp extends LitElement {
           this.shadowRoot.querySelector('#menu').uid = payload.uid;
         });
         break;
+      case 'item':
+        import('./views/item-view/item-view.js').then((module) => {
+          var itemElement = this.shadowRoot.querySelector("#item");
+          itemElement.uid = payload.uid;
+          itemElement.iid = payload.iid;
+        });
+        break;
       default:
         page = 'error';
         import('./views/error-view/error-view.js');
@@ -273,8 +284,10 @@ class MyApp extends LitElement {
     this._locationChanged();
   }
 
-  _onItemClick(item) {
+  _onItemClick(item, uid) {
     console.log('on item click event:', item);
+    window.history.pushState({}, '', `/restaurants/${uid}/menu/${item.__id__}`);
+    this._locationChanged();
   }
 }
 

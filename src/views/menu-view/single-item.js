@@ -38,18 +38,14 @@ class SingleItem extends LitElement {
             
             <div>
                 <div class="name">${this.name}</div>
-                <div class="description">${this._computeDescription(this.description, this.ingredients)}</div>
+                <div class="description">${this._computeIngredients(this.ingredients)}</div>
             </div>
             <div class="price">${this._computePrice(this.defaultOption, this.options)}</div>
         `;
     }
 
-    _computeDescription(description, ingredients) {
-        if (description) {
-            return description;
-        } else if (ingredients) {
-            return ingredients.join(', ')
-        }
+    _computeIngredients(ingredients) {
+        if (ingredients) return ingredients.join(', ')
     }
 
     _computePrice(defaultOption, options) {
