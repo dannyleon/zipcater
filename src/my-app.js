@@ -25,11 +25,13 @@ import { profileIcon, cartIcon } from './my-icons.js';
 import './components/snack-bar.js';
 import '@material/mwc-fab';
 import { ButtonSharedStyles } from './styles/button-shared-styles.js';
-import './components/sign-in-drawer/sign-in-drawer'
+import './components/sign-in-drawer/sign-in-drawer';
+import './components/account-drawer/account-drawer';
+import './dialogs/create-account-dialog/create-account-dialog';
 
 class MyApp extends LitElement {
   render() {
-    const {_page, _snackbarOpened, _offline, _signInDrawerOpened} = this;
+    const {_page, _snackbarOpened, _offline, _signInDrawerOpened, _accountDrawerOpened, signedIn, user} = this;
     // Anything that's related to rendering should be done in here.
     return html`
     ${ButtonSharedStyles}
@@ -45,6 +47,7 @@ class MyApp extends LitElement {
         --app-light-secondary-color: #ff5131;
         --app-dark-secondary-color: #9b0000;
         --app-tertiary-color: #FF9100;
+        --app-dark-tertiary-color: #c56200;
         --app-light-text-color: #ffffff;
         --app-dark-text-color: #000000;
         --app-fill-color: #EEEEEE;
@@ -79,7 +82,11 @@ class MyApp extends LitElement {
         background-color: var(--app-header-background-color);
       }
 
-      [main-title] {
+      .main-title {
+        margin-right: auto;
+      }
+
+      .main-title button {
         font-family: 'Open Sans';
         text-transform: lowercase;
         font-size: 24px;
@@ -87,11 +94,11 @@ class MyApp extends LitElement {
         color: var(--app-secondary-color);
       }
 
-      [main-title] .left {
+      .main-title .left {
         font-weight: 300;
       }
 
-      [main-title] .right {
+      .main-title .right {
         font-weight: 800;
       }
 
@@ -141,17 +148,26 @@ class MyApp extends LitElement {
     <!-- Header -->
     <app-header condenses reveals effects="waterfall">
       <app-toolbar class="toolbar-top">
-        <div main-title>
-          <span class="left">nine2five</span><span class="right">catering</span>
+        <div class="main-title">
+          <button @click="${_ => this._homeButtonClick()}">
+            <span class="left">nine2five</span><span class="right">catering</span>
+          </button>
         </div>
-        <button @click="${_ => this._updateSignInDrawerState(true)}" class="profile-icon">${profileIcon}</button>
+        <button @click="${_ => this._updateDrawerState(true, signedIn)}" class="profile-icon">${profileIcon}</button>
       </app-toolbar>
     </app-header>
 
     <sign-in-drawer 
-      @opened-changed="${e => this._updateSignInDrawerState(e.detail.opened)}" 
+      @opened-changed="${e => this._updateDrawerState(e.detail.opened, signedIn)}"
+      @create-account="${e => this._openCreateAccountDialog()}" 
       .opened="${_signInDrawerOpened}">
     </sign-in-drawer>
+
+    <account-drawer 
+      @opened-changed="${e => this._updateDrawerState(e.detail.opened, signedIn)}"
+      .opened="${_accountDrawerOpened}"
+      .user="${user}">
+    </account-drawer>
 
     <!-- Main content -->
     <main role="main" class="main-content">
@@ -160,6 +176,8 @@ class MyApp extends LitElement {
       <item-view id="item" class="page" ?active="${_page === 'item'}"></item-view>
       <error-view class="page" ?active="${_page === 'error'}"></error-view>
     </main>
+    
+    <create-account-dialog id="createAccountDialog"></create-account-dialog>
 
     <mwc-fab ?hidden="${this._signInDrawerOpened}">${cartIcon}</mwc-fab>
 
@@ -174,18 +192,23 @@ class MyApp extends LitElement {
       _page: { type: String },
       _snackbarOpened: { type: Boolean },
       _offline: { type: Boolean },
-      _signInDrawerOpened: { type: Boolean }
+      _signInDrawerOpened: { type: Boolean },
+      _accountDrawerOpened: { type: Boolean },
+      user: {type: Object},
+      signedIn: {type: Boolean}
     }
   }
 
   constructor() {
     super();
     this._signInDrawerOpened = false;
+    this._accountDrawerOpened = false;
     // To force all event listeners for gestures to be passive.
     // See https://www.polymer-project.org/3.0/docs/devguide/settings#setting-passive-touch-gestures
     setPassiveTouchGestures(true);
 
     firebase.auth().onAuthStateChanged(user => {
+      console.log('on auth state changed:', user)
       if (user) {
         let userDetails = {
           email: user.email,
@@ -221,7 +244,7 @@ class MyApp extends LitElement {
 
   _layoutChanged(isWideLayout) {
     // The drawer doesn't make sense in a wide layout, so if it's opened, close it.
-    this._updateSignInDrawerState(false);
+    this._updateDrawerState(false, this.signedIn);
   }
 
   _offlineChanged(offline) {
@@ -266,9 +289,15 @@ class MyApp extends LitElement {
     this._loadPage(page, payload);
   }
 
-  _updateSignInDrawerState(opened) {
-    if (opened !== this._signInDrawerOpened) {
-      this._signInDrawerOpened = opened;
+  _updateDrawerState(opened, signedIn) {
+    if (!signedIn) {
+      if (opened !== this._signInDrawerOpened) {
+        this._signInDrawerOpened = opened;
+      }
+    } else {
+        if (opened !== this._accountDrawerOpened) {
+          this._accountDrawerOpened = opened;
+        }
     }
   }
 
@@ -309,6 +338,23 @@ class MyApp extends LitElement {
     console.log('on item click event:', item);
     window.history.pushState({}, '', `/restaurants/${uid}/menu/${item.__id__}`);
     this._locationChanged();
+  }
+
+  _homeButtonClick() {
+    console.log('home button click event...');
+    window.history.pushState({}, '', '/');
+    this._locationChanged();
+  }
+
+  _openCreateAccountDialog() {
+    console.log('create account event...');
+    this.shadowRoot.querySelector('#createAccountDialog').show();
+    // import('./dialogs/create-account-dialog/create-account-dialog.js').then((module) => {
+    //   console.log('create-account-dialog imported:', module)
+    //   this.shadowRoot.querySelector('#createAccountDialog').show();
+    // }).catch((err) => {
+    //   console.log('err importing create-account-dialog:', err)
+    // });
   }
 }
 

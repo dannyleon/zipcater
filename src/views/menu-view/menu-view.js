@@ -3,7 +3,7 @@ import {PageViewElement} from '../page-view-element';
 import {FirestoreMixin} from '../../mixins/firestore-mixin/firestore-mixin';
 import {SharedStyles} from '../../styles/shared-styles';
 import {repeat} from 'lit-html/directives/repeat';
-import '../../components/mwc-tab/mwc-tab';
+import '../../components/mwc-tabs/mwc-tab';
 import './single-item';
 
 class MenuView extends FirestoreMixin(PageViewElement) {
@@ -43,11 +43,6 @@ class MenuView extends FirestoreMixin(PageViewElement) {
 
                 single-item {
                     background-color: var(--app-fill-color);
-                }
-
-                .header {
-                    font-weight: 700;
-                    font-size: 24px;
                 }
 
                 .restaurant-container {
@@ -94,6 +89,67 @@ class MenuView extends FirestoreMixin(PageViewElement) {
                     margin-bottom: 16px;
                     border-top: 1px solid var(--app-border-color);
                     border-bottom: 1px solid var(--app-border-color);
+                }
+
+                .category-tabs {
+                    display: flex;
+                    align-items: center;
+                    overflow-x: auto;
+                }
+
+                @media (max-width: 768px) {
+                    .restaurant-details .name {
+                        font-size: 32px;
+                    }
+
+                    .restaurant-container img {
+                        width: 200px;
+                        height: 135px;
+                    }
+
+                    .restaurant-details .description {
+                        font-size: 14px;
+                    }
+
+                    .restaurant-details .cuisine {
+                        font-weight: 700;
+                        font-style: italic;
+                        margin-bottom: 12px;
+                        font-size: 12px;
+                    }
+
+                    single-item {
+                        font-size: 14px;
+                    }
+
+                    mwc-tab {
+                        --mdc-tab-font-size: 12px;
+                    }
+                }
+
+                @media (max-width: 460px) {
+                    .restaurant-container {
+                        flex-direction: column;
+                        align-items: flex-start;
+                    }
+
+                    .restaurant-container img {
+                        width: 100%;
+                    }
+
+                    .header {
+                        display: none;
+                    }
+
+                    .category-tabs {
+                        flex: 1;
+                        justify-content: space-around;
+                    }
+
+                    .grid-container {
+                        grid-template-columns: repeat(1, 1fr);
+                        grid-gap: 8px;
+                    }
                 }
             </style>
 

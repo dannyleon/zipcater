@@ -36,8 +36,6 @@ class RestaurantsView extends FirestoreMixin(PageViewElement) {
                 }
 
                 .header {
-                    font-weight: 700;
-                    font-size: 24px;
                     padding-top: 24px;
                 }
 
@@ -45,10 +43,32 @@ class RestaurantsView extends FirestoreMixin(PageViewElement) {
                     width: 100%;
                     height: 200px;
                     background-color: gray;
+                    border-radius: 5px;
+
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                @media (max-width: 768px) {
+                    .grid-container {
+                        grid-template-columns: repeat(auto-fill, 200px);
+                    }
+
+                    .promo-placeholder {
+                        height: 150px;
+                    }
+                }
+
+                @media (max-width: 460px) {
+                    .grid-container {
+                        grid-template-columns: repeat(1, 1fr);
+                        grid-gap: 8px;
+                    }
                 }
             </style>
 
-            <div class="promo-placeholder"></div>
+            <div class="promo-placeholder">promo placeholder</div>
 
             <div class="header">Restaurants</div>
             <div class="grid-container">

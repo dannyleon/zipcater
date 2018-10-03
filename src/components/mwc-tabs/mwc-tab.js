@@ -16,8 +16,14 @@ class MwcTab extends LitElement {
     render() {
         return html`
             <style>
+                :host {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
                 mwc-button {
                     --mdc-theme-primary: var(--app-header-text-color);
+                    --mdc-font-size: var(--mdc-tab-font-size, 16px);
                 }
 
                 :host([selected="true"]) mwc-button {

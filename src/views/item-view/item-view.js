@@ -32,14 +32,14 @@ class ItemView extends FirestoreMixin(PageViewElement) {
                 }
 
                 img {
-                    width: 500px;
-                    height: 330px;
+                    width: 400px;
+                    height: 265px;
                     object-fit: cover;
                     border-radius: 5px;
                     background-color: var(--app-dark-primary-color);
                 }
 
-                .header {
+                .name {
                     font-size: 40px;
                     font-family: 'Roboto Mono', monospace;
                     line-height: 1;
@@ -77,6 +77,48 @@ class ItemView extends FirestoreMixin(PageViewElement) {
                     --mdc-theme-primary: var(--app-button-background-color);
                     --mdc-theme-on-primary: black;
                 }
+
+                @media (max-width: 768px) {
+                    .container {
+                        flex-direction: column;
+                    }
+
+                    .info-container {
+                        margin: 0;
+                    }
+
+                    .image-container {
+                        width: 100%;
+                    }
+
+                    img {
+                        width: 100%;
+                        height: 300px;
+                    }
+                }
+
+                @media (max-width: 460px) {
+                    img {
+                        height: 200px;
+                    }
+
+                    .name {
+                        font-size: 32px;
+                    }
+
+                    .subtitle {
+                        font-size: 12px;
+                    }
+
+                    .description {
+                        font-size: 14px;
+                    }
+
+                    .price {
+                        font-family: 'Roboto Mono', monospace;
+                        font-size: 22px;
+                    }
+                }
             </style>
 
             <div class="container">
@@ -85,7 +127,7 @@ class ItemView extends FirestoreMixin(PageViewElement) {
                 </div>
     
                 <div class="info-container">
-                    <div class="header">${this.item ? this.item.name : ""}</div>
+                    <div class="name">${this.item ? this.item.name : ""}</div>
                     <div class="subtitle">${this._computeIngredients(this.item)}</div>
                     <div class="description">${this.item ? this.item.description : ""}</div>
 

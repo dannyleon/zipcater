@@ -25,6 +25,7 @@ class SingleRestaurant extends LitElement {
                     border-radius: 5px;
                     overflow: hidden;
                 }
+
                 img {
                     width: 250px;
                     height: 165px;
@@ -42,6 +43,35 @@ class SingleRestaurant extends LitElement {
                 .subtitle {
                     font-size: 12px;
                     font-weight: 300;
+                }
+
+                @media (max-width: 768px) {
+                    :host {
+                        width: 200px;
+                    }
+
+                    img {
+                        width: 200px;
+                        height: 135px;
+                    }
+
+                    .name {
+                        font-size: 16px;
+                    }
+
+                    .subtitle {
+                        font-size: 10px;
+                    }
+                }
+
+                @media (max-width: 460px) {
+                    :host {
+                        width: 100%;
+                    }
+
+                    img {
+                        width: 100%;
+                    }
                 }
             </style>
 

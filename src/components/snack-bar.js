@@ -15,6 +15,7 @@ class SnackBar extends LitElement {
     return html`
       <style>
       :host {
+        z-index: 1;
         display: block;
         position: fixed;
         bottom: 0;
@@ -35,10 +36,17 @@ class SnackBar extends LitElement {
         visibility: visible;
         transform: translate3d(0, 0, 0);
       }
+      :host(.drawer) {
+        background-color: black;
+        position: absolute;
+      }
       @media (min-width: 460px) {
         :host {
           width: 320px;
           margin: auto;
+        }
+        :host(.drawer) {
+          width: auto;
         }
       }
     </style>

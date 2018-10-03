@@ -4,7 +4,7 @@
       "type": "script",
       "weight": 1
     },
-    "src/components/my-view1.js": {
+    "src/views/restaurants-view/restaurants-view.js": {
       "type": "script",
       "weight": 1
     },
@@ -13,40 +13,12 @@
       "weight": 1
     }
   },
-  "/view1": {
+  "/restaurants": {
     "src/my-app.js": {
       "type": "script",
       "weight": 1
     },
-    "src/components/my-view1.js": {
-      "type": "script",
-      "weight": 1
-    },
-    "node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js": {
-      "type": "script",
-      "weight": 1
-    }
-  },
-  "/view2": {
-    "src/my-app.js": {
-      "type": "script",
-      "weight": 1
-    },
-    "src/components/my-view2.js": {
-      "type": "script",
-      "weight": 1
-    },
-    "node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js": {
-      "type": "script",
-      "weight": 1
-    }
-  },
-  "/view3": {
-    "src/my-app.js": {
-      "type": "script",
-      "weight": 1
-    },
-    "src/components/my-view3.js": {
+    "src/views/restaurants-view/restaurants-view.js": {
       "type": "script",
       "weight": 1
     },
