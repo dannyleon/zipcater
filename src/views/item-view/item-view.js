@@ -9,6 +9,7 @@ class ItemView extends FirestoreMixin(PageViewElement) {
         return {
             uid: String,
             iid: String,
+            quantity: Number,
             item: {
                 type: Object,
                 doc: 'restaurants/{uid}/menu/{iid}',
@@ -133,12 +134,22 @@ class ItemView extends FirestoreMixin(PageViewElement) {
 
                     <div class="button-container">
                         <div class="price">${this._computePrice(this.item)}</div>
-                        <mwc-button raised>add to cart</mwc-button>
+                        <mwc-button @click="${_ => this._onAddToCartClick(this.item, this.quantity)}" raised>add to cart</mwc-button>
                     </div>
                 </div>
             </div>
             
         `;
+    }
+
+    /**
+      * Instance of the element is created/upgraded. Useful for initializing
+      * state, set up event listeners, create shadow dom.
+      * @constructor
+      */
+    constructor() {
+        super();
+        this.quantity = 1;
     }
 
     updated(changedProperties) {
@@ -169,6 +180,10 @@ class ItemView extends FirestoreMixin(PageViewElement) {
             let rawPrice = item.options[item.defaultOption];
             return `$${rawPrice.toFixed(2)}`;    
         }
+    }
+
+    _onAddToCartClick(item, qty) {
+        this.dispatchEvent(new CustomEvent('add-to-cart', {detail: {item: item, qty: qty}}));
     }
 
 }

@@ -27,11 +27,12 @@ import '@material/mwc-fab';
 import { ButtonSharedStyles } from './styles/button-shared-styles.js';
 import './components/sign-in-drawer/sign-in-drawer';
 import './components/account-drawer/account-drawer';
+import './components/cart-drawer/cart-drawer';
 import './dialogs/create-account-dialog/create-account-dialog';
 
 class MyApp extends LitElement {
   render() {
-    const {_page, _snackbarOpened, _offline, _signInDrawerOpened, _accountDrawerOpened, signedIn, user} = this;
+    const {_page, _snackbarOpened, _offline, _signInDrawerOpened, _accountDrawerOpened, _cartDrawerOpened, signedIn, user, uid} = this;
     // Anything that's related to rendering should be done in here.
     return html`
     ${ButtonSharedStyles}
@@ -169,17 +170,24 @@ class MyApp extends LitElement {
       .user="${user}">
     </account-drawer>
 
+    <cart-drawer 
+      @opened-changed="${e => this._updateCartDrawerState(e.detail.opened, signedIn)}"
+      .opened="${_cartDrawerOpened}"
+      .uid="${uid}"
+      @delete-cart-item="${e => this._onDeleteCartItemEvent(e.detail)}">
+    </cart-drawer>
+
     <!-- Main content -->
     <main role="main" class="main-content">
       <restaurants-view class="page" ?active="${_page === 'restaurants'}" @restaurant-click="${e => this._onRestaurantClick(e.detail)}"></restaurants-view>
       <menu-view id="menu" class="page" ?active="${_page === 'menu'}" @item-click="${e => this._onItemClick(e.detail.item, e.detail.uid)}"></menu-view>
-      <item-view id="item" class="page" ?active="${_page === 'item'}"></item-view>
+      <item-view id="item" class="page" ?active="${_page === 'item'}" @add-to-cart="${e => this._onAddToCartEvent(e.detail.item, e.detail.qty)}"></item-view>
       <error-view class="page" ?active="${_page === 'error'}"></error-view>
     </main>
     
     <create-account-dialog id="createAccountDialog"></create-account-dialog>
 
-    <mwc-fab ?hidden="${this._signInDrawerOpened}">${cartIcon}</mwc-fab>
+    <mwc-fab ?hidden="${_signInDrawerOpened || _cartDrawerOpened}" @click="${_ => this._updateCartDrawerState(true, signedIn)}">${cartIcon}</mwc-fab>
 
     <snack-bar ?active="${_snackbarOpened}">
         You are now ${_offline ? 'offline' : 'online'}.</snack-bar>
@@ -194,6 +202,7 @@ class MyApp extends LitElement {
       _offline: { type: Boolean },
       _signInDrawerOpened: { type: Boolean },
       _accountDrawerOpened: { type: Boolean },
+      _cartDrawerOpened: { type: Boolean },
       user: {type: Object},
       signedIn: {type: Boolean}
     }
@@ -203,6 +212,7 @@ class MyApp extends LitElement {
     super();
     this._signInDrawerOpened = false;
     this._accountDrawerOpened = false;
+    this._cartDrawerOpened = false;
     // To force all event listeners for gestures to be passive.
     // See https://www.polymer-project.org/3.0/docs/devguide/settings#setting-passive-touch-gestures
     setPassiveTouchGestures(true);
@@ -213,9 +223,11 @@ class MyApp extends LitElement {
         let userDetails = {
           email: user.email,
           displayName: user.displayName,
-          photoURL: user.photoURL
+          photoURL: user.photoURL,
+          uid: user.uid
         }
         this.user = userDetails;
+        this.uid = user.uid;
         this.signedIn = true;
       } else {
         this.user = {};
@@ -301,6 +313,14 @@ class MyApp extends LitElement {
     }
   }
 
+  _updateCartDrawerState(opened, signedIn) {
+    if (!signedIn) return;
+    
+    if (opened !== this._cartDrawerOpened) {
+      this._cartDrawerOpened = opened;
+    }
+  }
+
   _loadPage(page, payload) {
     switch(page) {
       case 'restaurants':
@@ -355,6 +375,26 @@ class MyApp extends LitElement {
     // }).catch((err) => {
     //   console.log('err importing create-account-dialog:', err)
     // });
+  }
+
+  _onAddToCartEvent(item, qty) {
+    console.log('add to cart event:', item, qty);
+    const iid = item.__id__;
+    delete item['__id__'];
+    item['quantity'] = qty;
+    let updates = {
+      items: {}
+    };
+    updates['items'][iid] = item;
+    firebase.firestore().doc(`carts/${this.user.uid}`).set(updates, {merge: true});
+  }
+
+  _onDeleteCartItemEvent(updatedCartItems) {
+    console.log('delete cart item event:', updatedCartItems);
+    let updates = {
+      items: updatedCartItems
+    };
+    firebase.firestore().doc(`carts/${this.user.uid}`).update(updates);
   }
 }
 

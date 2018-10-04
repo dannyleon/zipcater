@@ -30,7 +30,7 @@ class CreateAccountDialog extends LitElement {
                 [main-title] {
                     font-family: 'Open Sans';
                     text-transform: lowercase;
-                    font-size: 32px;
+                    font-size: 24px;
                     text-align: start;
                     display: flex;
                     color: black;

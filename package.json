@@ -10,6 +10,7 @@
     "start": "polymer serve --open",
     "build": "npm run build:prpl-server && npm run build:static",
     "build:prpl-server": "polymer build --auto-base-path && gulp prpl-server",
+    "deploy:prpl-server": "gcloud app deploy server/app.yaml",
     "build:static": "polymer build",
     "serve:prpl-server": "prpl-server --root server/build",
     "serve:static": "polymer serve --port 5000 build/es5-bundled",
