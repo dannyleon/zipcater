@@ -32,7 +32,7 @@ import './dialogs/create-account-dialog/create-account-dialog';
 
 class MyApp extends LitElement {
   render() {
-    const {_page, _snackbarOpened, _offline, _signInDrawerOpened, _accountDrawerOpened, _cartDrawerOpened, signedIn, user, uid} = this;
+    const {_page, _snackbarOpened, _snackbarMessage, _offline, _signInDrawerOpened, _accountDrawerOpened, _cartDrawerOpened, signedIn, user, uid} = this;
     // Anything that's related to rendering should be done in here.
     return html`
     ${ButtonSharedStyles}
@@ -189,8 +189,7 @@ class MyApp extends LitElement {
 
     <mwc-fab ?hidden="${_signInDrawerOpened || _cartDrawerOpened}" @click="${_ => this._updateCartDrawerState(true, signedIn)}">${cartIcon}</mwc-fab>
 
-    <snack-bar ?active="${_snackbarOpened}">
-        You are now ${_offline ? 'offline' : 'online'}.</snack-bar>
+    <snack-bar ?active="${_snackbarOpened}">${_snackbarMessage}</snack-bar>
     `;
   }
 
@@ -199,6 +198,7 @@ class MyApp extends LitElement {
       appTitle: { type: String },
       _page: { type: String },
       _snackbarOpened: { type: Boolean },
+      _snackbarMessage: { type: String },
       _offline: { type: Boolean },
       _signInDrawerOpened: { type: Boolean },
       _accountDrawerOpened: { type: Boolean },
@@ -268,7 +268,12 @@ class MyApp extends LitElement {
       return;
     }
 
+    this.showSnackbar(`You are now ${_offline ? 'offline' : 'online'}.`);
+  }
+
+  showSnackbar(msg) {
     clearTimeout(this.__snackbarTimer);
+    this._snackbarMessage = msg;
     this._snackbarOpened = true;
     this.__snackbarTimer = setTimeout(() => { this._snackbarOpened = false }, 3000);
   }
@@ -314,7 +319,7 @@ class MyApp extends LitElement {
   }
 
   _updateCartDrawerState(opened, signedIn) {
-    if (!signedIn) return;
+    if (opened && !signedIn) return this.showSnackbar('Please sign in to see shopping cart.');
     
     if (opened !== this._cartDrawerOpened) {
       this._cartDrawerOpened = opened;
