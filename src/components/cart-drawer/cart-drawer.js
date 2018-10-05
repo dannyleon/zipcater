@@ -95,6 +95,13 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
                     font-size: 24px;
                     margin-top: auto;
                 }
+
+                .empty {
+                    text-align: center;
+                    border-bottom: 1px solid var(--app-border-color);
+                    padding: 16px 0;
+                    font-weight: 700;
+                }
             </style>
 
             <app-drawer align="end" .opened="${this.opened}"
@@ -109,6 +116,7 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
                             ${this.cart ? (repeat(Object.entries(this.cart.items), item => html `
                                 <single-cart-item @click="${_ => this._onSingleCartItemClick(this.cart.items, item[0])}" .iid="${item[0]}" .item="${item[1]}"></single-cart-item>
                             `)) : ""}
+                            <div ?hidden="${this.cart ? (Object.keys(this.cart.items).length !== 0) : true}" class="empty">Shopping cart is empty</div>
                         </div>
                         <div class="total">subtotal<div class="total-number">${this._computeCartTotal(this.cart)}</div></div>
                         <mwc-button @click="${_ => this._onCheckoutClick()}" class="checkout" unelevated>checkout</mwc-button>
