@@ -391,7 +391,9 @@ class MyApp extends LitElement {
       items: {}
     };
     updates['items'][iid] = item;
-    firebase.firestore().doc(`carts/${this.user.uid}`).set(updates, {merge: true});
+    firebase.firestore().doc(`carts/${this.user.uid}`).set(updates, {merge: true}).then(response => {
+      this.showSnackbar(`${item.name} added to cart.`)
+    });
   }
 
   _onDeleteCartItemEvent(updatedCartItems) {
