@@ -1,6 +1,7 @@
 import {LitElement, html} from '@polymer/lit-element';
 import '../../components/mwc-dialog/mwc-dialog';
 import '../../components/snack-bar';
+import '../../components/mwc-textfield/mwc-textfield';
 
 class CreateAccountDialog extends LitElement {
     static get properties() {
@@ -44,21 +45,12 @@ class CreateAccountDialog extends LitElement {
                     font-weight: 800;
                 }
 
-                input {
-                    margin-bottom: 8px;
-                    background: transparent;
-                    border: 1px solid black;
-                    height: 32px;
-                    border-radius: 3px;
-                    color: black;                    
-
-                    padding: 4px;
-                    font-size: 14px;
-                    letter-spacing: 1.5px;
-                }
-
-                input::placeholder {
-                    color: rgba(0, 0, 0, 0.5);
+                mwc-textfield {
+                    --mdc-theme-primary: black;
+                    --mdc-label-color: black;
+                    --mdc-outlined-color: rgba(0, 0, 0, 0.24);
+                    --mdc-outlined-hover-color: rgba(0, 0, 0, 0.87);
+                    margin: 8px 0;
                 }
 
                 .container {
@@ -74,9 +66,9 @@ class CreateAccountDialog extends LitElement {
                         <div class="right">account</div>
                     </div>
                     <div class="container">
-                        <input id="cem" placeholder="email" type="email">
-                        <input id="ccem" placeholder="confirm email" type="email">
-                        <input id="cpa" placeholder="password" type="password">
+                        <mwc-textfield fullWidth box id="cem" label="email" type="email"></mwc-textfield>
+                        <mwc-textfield fullWidth box id="cpa" label="password" type="password"></mwc-textfield>
+                        <mwc-textfield fullWidth box id="ccpa" label="confirm password" type="password"></mwc-textfield>
                     </div>
                     <div class="buttons" slot="footer">
                         <mwc-button @click="${_ => this._onCloseDialogClick()}" class="cancel-button" data-mdc-dialog-action="close">cancel</mwc-button>
@@ -98,17 +90,17 @@ class CreateAccountDialog extends LitElement {
 
     _onCloseDialogClick() {
         this.shadowRoot.querySelector('#cem').value = null;
-        this.shadowRoot.querySelector('#ccem').value = null;
         this.shadowRoot.querySelector('#cpa').value = null;
+        this.shadowRoot.querySelector('#ccpa').value = null;
     }
     
     _onCreateAccountClick() {
         let cem = this.shadowRoot.querySelector('#cem').value;
-        let ccem = this.shadowRoot.querySelector('#ccem').value;
         let cpa = this.shadowRoot.querySelector('#cpa').value;
+        let ccpa = this.shadowRoot.querySelector('#ccpa').value;
         
-        if (!ccem || !cem || !cpa) return this.showErrorSnackbar('null-inputs');
-        if (cem !== ccem) return this.showErrorSnackbar('mismatched-emails');
+        if (!ccpa || !cem || !cpa) return this.showErrorSnackbar('null-inputs');
+        if (cpa !== ccpa) return this.showErrorSnackbar('mismatched-passwords');
 
         firebase.auth().createUserWithEmailAndPassword(cem, cpa).then(response => {
             console.log('account creation success:', response);
@@ -131,8 +123,8 @@ class CreateAccountDialog extends LitElement {
             case 'auth/weak-password':
                 errMessage = 'Unable to create account, password not strong enough.'
                 break;
-            case 'mismatched-emails':
-                errMessage = 'Unable to create account, emails do not match.'
+            case 'mismatched-passwords':
+                errMessage = 'Unable to create account, passwords do not match.'
                 break;
             case 'null-inputs':
                 errMessage = 'Unable to create account, please fill out every field.'

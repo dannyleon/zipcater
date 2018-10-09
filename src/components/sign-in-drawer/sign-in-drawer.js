@@ -1,6 +1,7 @@
 import {LitElement, html} from '@polymer/lit-element';
 import '@polymer/app-layout/app-drawer/app-drawer.js';
 import '@material/mwc-button';
+import '../../components/mwc-textfield/mwc-textfield';
 import '../snack-bar';
 
 class SignInDrawer extends LitElement {
@@ -53,21 +54,12 @@ class SignInDrawer extends LitElement {
                     font-weight: 800;
                 }
 
-                input {
-                    margin-bottom: 8px;
-                    background: transparent;
-                    border: 1px solid white;
-                    height: 32px;
-                    border-radius: 3px;
-                    color: white;                    
-
-                    padding: 4px;
-                    font-size: 14px;
-                    letter-spacing: 1.5px;
-                }
-
-                input::placeholder {
-                    color: rgba(360, 360, 360, 0.5);
+                mwc-textfield {
+                    --mdc-theme-primary: white;
+                    --mdc-label-color: rgb(360, 360, 360);
+                    --mdc-outlined-color: rgba(360, 360, 360, 0.24);
+                    --mdc-outlined-hover-color: rgba(360, 360, 360, 0.87);
+                    margin: 8px 0;
                 }
 
                 mwc-button.create {
@@ -89,8 +81,8 @@ class SignInDrawer extends LitElement {
                         <div main-title>
                             <span class="left">sign</span><span class="right">in</span>
                         </div>
-                        <input id="em" placeholder="email" type="email">
-                        <input id="pa" placeholder="password" type="password">
+                        <mwc-textfield id="em" outlined fullWidth label="email"></mwc-textfield>
+                        <mwc-textfield id="pa" outlined fullWidth label="password" type="password"></mwc-textfield>
                         <mwc-button @click="${_ => this._onSignInClick()}" class="sign-in" unelevated>sign in</mwc-button>
                         <mwc-button @click="${_ => this._onCreateAccountClick()}" class="create" unelevated>create account</mwc-button>
                         <snack-bar class="drawer" ?active="${this._snackbarOpened}">${this._snackbarMessage}</snack-bar>

@@ -144,7 +144,8 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
     }
 
     _onCheckoutClick() {
-        console.log('on checkout click...');
+        this.dispatchEvent(new CustomEvent('checkout'));
+        this.opened = false;
     }
 
     _computeCartTotal(cart) {

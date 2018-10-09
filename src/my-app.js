@@ -44,7 +44,7 @@ class MyApp extends LitElement {
         --app-primary-color: #fafafa;
         --app-light-primary-color: #ffffff;
         --app-dark-primary-color: #c7c7c7;
-        --app-secondary-color: #d50000;
+        --app-secondary-color: #d50000 ;
         --app-light-secondary-color: #ff5131;
         --app-dark-secondary-color: #9b0000;
         --app-tertiary-color: #FF9100;
@@ -69,6 +69,7 @@ class MyApp extends LitElement {
       }
 
       app-header {
+        z-index: 1;
         position: fixed;
         top: 0;
         left: 0;
@@ -93,6 +94,7 @@ class MyApp extends LitElement {
         font-size: 24px;
         text-align: start;
         color: var(--app-secondary-color);
+        padding: 0;
       }
 
       .main-title .left {
@@ -142,7 +144,10 @@ class MyApp extends LitElement {
 
       /* Wide layout: when the viewport width is bigger than 460px, layout
       changes to a wide layout. */
-      @media (min-width: 460px) {
+      @media (max-width: 460px) {
+        .main-title button {
+          font-size: 20px;
+        }
       }
     </style>
 
@@ -174,7 +179,8 @@ class MyApp extends LitElement {
       @opened-changed="${e => this._updateCartDrawerState(e.detail.opened, signedIn)}"
       .opened="${_cartDrawerOpened}"
       .uid="${uid}"
-      @delete-cart-item="${e => this._onDeleteCartItemEvent(e.detail)}">
+      @delete-cart-item="${e => this._onDeleteCartItemEvent(e.detail)}"
+      @checkout="${e => this._onCheckoutEvent()}">
     </cart-drawer>
 
     <!-- Main content -->
@@ -182,12 +188,15 @@ class MyApp extends LitElement {
       <restaurants-view class="page" ?active="${_page === 'restaurants'}" @restaurant-click="${e => this._onRestaurantClick(e.detail)}"></restaurants-view>
       <menu-view id="menu" class="page" ?active="${_page === 'menu'}" @item-click="${e => this._onItemClick(e.detail.item, e.detail.uid)}"></menu-view>
       <item-view id="item" class="page" ?active="${_page === 'item'}" @add-to-cart="${e => this._onAddToCartEvent(e.detail.item, e.detail.qty)}"></item-view>
+      <checkout-view id="checkout" class="page" ?active="${_page === 'checkout'}" .uid="${uid}">
+        <slot id="payment-form"></slot>
+      </checkout-view>
       <error-view class="page" ?active="${_page === 'error'}"></error-view>
     </main>
     
     <create-account-dialog id="createAccountDialog"></create-account-dialog>
 
-    <mwc-fab ?hidden="${_signInDrawerOpened || _cartDrawerOpened}" @click="${_ => this._updateCartDrawerState(true, signedIn)}">${cartIcon}</mwc-fab>
+    <mwc-fab ?hidden="${_signInDrawerOpened || _cartDrawerOpened || _page === 'checkout'}" @click="${_ => this._updateCartDrawerState(true, signedIn)}">${cartIcon}</mwc-fab>
 
     <snack-bar ?active="${_snackbarOpened}">${_snackbarMessage}</snack-bar>
     `;
@@ -204,6 +213,7 @@ class MyApp extends LitElement {
       _accountDrawerOpened: { type: Boolean },
       _cartDrawerOpened: { type: Boolean },
       user: {type: Object},
+      uid: {type: String},
       signedIn: {type: Boolean}
     }
   }
@@ -268,7 +278,7 @@ class MyApp extends LitElement {
       return;
     }
 
-    this.showSnackbar(`You are now ${_offline ? 'offline' : 'online'}.`);
+    this.showSnackbar(`You are now ${this._offline ? 'offline' : 'online'}.`);
   }
 
   showSnackbar(msg) {
@@ -345,6 +355,10 @@ class MyApp extends LitElement {
           itemElement.uid = payload.uid;
           itemElement.iid = payload.iid;
         });
+      case 'checkout':
+        import('./views/checkout-view/checkout-view.js').then((module) => {
+          var checkoutElement = this.shadowRoot.querySelector("#checkout");
+        });
         break;
       default:
         page = 'error';
@@ -368,6 +382,12 @@ class MyApp extends LitElement {
   _homeButtonClick() {
     console.log('home button click event...');
     window.history.pushState({}, '', '/');
+    this._locationChanged();
+  }
+
+  _onCheckoutEvent() {
+    console.log('checkout click event...');
+    window.history.pushState({}, '', '/checkout');
     this._locationChanged();
   }
 

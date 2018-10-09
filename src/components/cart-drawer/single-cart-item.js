@@ -35,7 +35,7 @@ class SingleCartItem extends LitElement {
                 }
             </style>
             
-            <div>${this.item.quantity}</div>
+            <div>${this.item.quantity} x</div>
             <div class="name">${this.item.name}</div>
             <div class="price">$${(this.item.options[this.item.defaultOption]).toFixed(2)}</div>
         `;
