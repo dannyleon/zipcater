@@ -43,6 +43,10 @@ class CheckoutView extends FirestoreMixin(PageViewElement) {
                 align-items: center;
             }
 
+            .arrow-back:hover svg {
+                fill: var(--app-dark-secondary-color);
+            }
+
             .arrow-back {
                 margin-right: 8px;
             }
@@ -160,7 +164,7 @@ class CheckoutView extends FirestoreMixin(PageViewElement) {
 
             </style>
             
-            <div class="main-title"><mwc-icon class="arrow-back">${arrowBackIcon}</mwc-icon>Checkout</div>
+            <div class="main-title"><mwc-icon @click="${_ => this._onArrowBackClick()}" class="arrow-back">${arrowBackIcon}</mwc-icon>Checkout</div>
             <div class="container">
                 <div class="header">Delivery address</div>
                 <div class="delivery-container">
@@ -266,6 +270,10 @@ class CheckoutView extends FirestoreMixin(PageViewElement) {
     //to round up to two decimal places
     _roundMoney(num) {
         return Math.round(num * 100) / 100;
+    }
+
+    _onArrowBackClick() {
+        window.history.back();
     }
 }
 
