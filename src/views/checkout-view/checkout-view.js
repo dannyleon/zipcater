@@ -222,31 +222,33 @@ class CheckoutView extends FirestoreMixin(PageViewElement) {
         console.log('changed properties:', changedProperties)
         const uidUpdated = changedProperties.has('uid');
         const cartUpdated = changedProperties.has('cart');
+        const activeUpdated = changedProperties.has('active');
        
         if (uidUpdated && this.argsArray) {
-            console.log('args array:', this.argsArray);
             this.argsArray.forEach(argsObject => {
                 var argsArr = argsObject.args
                 this._firestoreUpdateBinding(argsObject.name, ...argsArr.map(x => this[x]))
             });
         }
        
-        if (cartUpdated) {
-            let subtotal = this._computeCartTotal(this.cart);
-            console.log('subtotal:', subtotal)
-            let tax = this._computeTax(subtotal);
-            let deliveryFee = this._computeDeliveryFee(subtotal);
-            let total = this._roundMoney(subtotal + tax + deliveryFee);
-
-            this.subtotal = subtotal;
-            this.tax = tax;
-            this.deliveryFee = deliveryFee;
-            this.total = total;
+        if (cartUpdated || activeUpdated) {
+            this._computeSummaryProperties();
         }
     }
 
+    _computeSummaryProperties() {
+        let subtotal = this._computeCartTotal(this.cart);
+        let tax = this._computeTax(subtotal);
+        let deliveryFee = this._computeDeliveryFee(subtotal);
+        let total = this._roundMoney(subtotal + tax + deliveryFee);
+
+        this.subtotal = subtotal;
+        this.tax = tax;
+        this.deliveryFee = deliveryFee;
+        this.total = total;
+    }
+
     _computeCartTotal(cart) {
-        console.log('computing cart total:', cart)
         if (!cart) return 0;
         var items = cart.items;
         let total = Object.keys(items).reduce((acc, cur) => {
@@ -263,7 +265,6 @@ class CheckoutView extends FirestoreMixin(PageViewElement) {
 
     _computeDeliveryFee(cartTotal) {
         if (!cartTotal) return 0;
-        console.log('computing delivery fee', (cartTotal * 0.1))
         return this._roundMoney(cartTotal * 0.1);
     }
 
