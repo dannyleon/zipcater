@@ -104,6 +104,13 @@ class CreateAccountDialog extends LitElement {
 
         firebase.auth().createUserWithEmailAndPassword(cem, cpa).then(response => {
             console.log('account creation success:', response);
+            const curUser = response.user;
+            const dbUser = {
+                email: curUser.email
+            }
+            return firebase.firestore().doc(`users/${curUser.uid}`).set(dbUser);
+        }).then(response => {
+            console.log('user saved to db:', response);
             this.close();
         }).catch(err => {
             console.log('account creation error:', err)

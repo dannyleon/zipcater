@@ -24,13 +24,9 @@ import '@material/mwc-icon/mwc-icon-font.js';
 class MDCWCTextField extends MDCWebComponentMixin(MDCTextField) {
   createAdapter() {
     return {
-      floatLabel: (shouldFloat) => {
-        if (this.host.labelAlwaysFloat) {
-          this.label_.float(true)
-        } else {
-          this.label_.float(shouldFloat);
-        }
-      },
+      shouldAlwaysFloat: () => {
+        return this.host.labelAlwaysFloat;
+      }
     }
   }
 }
@@ -54,6 +50,7 @@ export class Textfield extends ComponentElement {
       box: {type: Boolean},
       outlined: {type: Boolean},
       disabled: {type: Boolean},
+      readonly: {type: Boolean},
       fullWidth: {type: Boolean},
       textarea: {type: Boolean},
       labelAlwaysFloat: {type: Boolean},
@@ -76,6 +73,7 @@ export class Textfield extends ComponentElement {
     this.box = false;
     this.outlined = false;
     this.disabled = false;
+    this.readonly = false;
     this.fullWidth = false;
     this.textarea = false;
     this.labelAlwaysFloat = false;
@@ -89,7 +87,7 @@ export class Textfield extends ComponentElement {
 
   // TODO(sorvell) #css: styling for fullwidth
   render() {
-    const {value, label, box, outlined, disabled, icon, iconTrailing, fullWidth, required, placeHolder, helperText, type, textarea, labelAlwaysFloat} = this;
+    const {value, label, box, outlined, disabled, icon, iconTrailing, fullWidth, required, placeHolder, helperText, type, textarea, labelAlwaysFloat, readonly} = this;
     const hostClassInfo = {
       'mdc-text-field--with-leading-icon': icon && !iconTrailing,
       'mdc-text-field--with-trailing-icon': icon && iconTrailing,
@@ -97,26 +95,29 @@ export class Textfield extends ComponentElement {
       'mdc-text-field--outlined': outlined,
       'mdc-text-field--fullwidth': fullWidth,
       'mdc-text-field--disabled': disabled,
+      'mdc-text-field--readonly': readonly,
       'mdc-text-field--textarea': textarea
     };
     return html`
       ${this.renderStyle()}
       <div class="mdc-text-field mdc-text-field--upgraded ${classMap(hostClassInfo)}">
         ${!fullWidth && icon ? html`<i class="material-icons mdc-text-field__icon" tabindex="0">${icon}</i>` : ''}
-        ${this._renderInput({value, required, type, placeHolder, label, textarea})}
-        ${label ? html`<label class="mdc-floating-label ${(value || labelAlwaysFloat) ? 'mdc-floating-label--float-above' : ''}" for="text-field">${label}</label>` : ''}
-        ${outlined ? html`<div class="mdc-notched-outline">
-            <svg><path class="mdc-notched-outline__path"/></svg>
-          </div>
-          <div class="mdc-notched-outline__idle"></div>` :
-    html`<div class="mdc-line-ripple"></div>`}
+        ${this._renderInput({value, required, type, placeHolder, label, textarea, readonly})}
+        ${label ? html`<label class="mdc-floating-label ${(labelAlwaysFloat || value) ? 'mdc-floating-label--float-above' : ''}" for="text-field">${label}</label>` : ''}
+        ${outlined ? 
+          html`
+            <div class="mdc-notched-outline">
+              <svg><path class="mdc-notched-outline__path"/></svg>
+            </div>
+            <div class="mdc-notched-outline__idle"></div>` :
+          html`<div class="mdc-line-ripple"></div>`}
       </div>
       ${helperText ? html`<p class="mdc-text-field-helper-text" aria-hidden="true">${helperText}</p>` : ''}`;
   }
 
-  _renderInput({value, required, type, placeHolder, label, textarea}) {
-    if (textarea) return html`<textarea @input="${e => this._changeHandler(e)}" type="${type}" placeholder="${placeHolder}" ?required="${required}" class="mdc-text-field__input ${value ? 'mdc-text-field--upgraded' : ''}" id="text-field" .value="${value}" aria-label="${label}">`;
-    return html`<input @input="${e => this._changeHandler(e)}" type="${type}" placeholder="${placeHolder}" ?required="${required}" class="mdc-text-field__input ${value ? 'mdc-text-field--upgraded' : ''}" id="text-field" .value="${value}" aria-label="${label}">`;
+  _renderInput({value, required, type, placeHolder, label, textarea, readonly}) {
+    if (textarea) return html`<textarea @input="${e => this._changeHandler(e)}" ?readonly="${readonly}" type="${type}" .placeholder="${placeHolder}" ?required="${required}" class="mdc-text-field__input ${value ? 'mdc-text-field--upgraded' : ''}" id="text-field" .value="${value}" aria-label="${label}">`;
+    return html`<input @input="${e => this._changeHandler(e)}" type="${type}" ?readonly="${readonly}" .placeholder="${placeHolder}" ?required="${required}" class="mdc-text-field__input ${value ? 'mdc-text-field--upgraded' : ''}" id="text-field" .value="${value}" aria-label="${label}">`;
   }
 
   _changeHandler(e) {
@@ -128,15 +129,6 @@ export class Textfield extends ComponentElement {
     super.firstUpdated();
     this._input = this.shadowRoot.querySelector('input');
   }
-  
-  /**
-    * @return {boolean}
-    * @private
-  */
- get shouldAlwaysFloat_() {
-   console.log('should always float')
-   return this.labelAlwaysFloat;
- }
 
   get valid() {
     return this._component && this._component.foundation_.isValid();

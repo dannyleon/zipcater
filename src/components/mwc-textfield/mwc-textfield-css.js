@@ -320,7 +320,7 @@ export const style = html`<style>
 .mdc-text-field:not(.mdc-text-field--disabled):not(.mdc-text-field--outlined) .mdc-text-field__input {
   border-bottom-color: rgba(0, 0, 0, 0.42);
 }
-.mdc-text-field:not(.mdc-text-field--disabled):not(.mdc-text-field--outlined) .mdc-text-field__input:hover {
+.mdc-text-field:not(.mdc-text-field--disabled):not(.mdc-text-field--readonly):not(.mdc-text-field--outlined) .mdc-text-field__input:hover {
   border-bottom-color: rgba(0, 0, 0, 0.87);
 }
 .mdc-text-field .mdc-line-ripple {
@@ -445,17 +445,17 @@ export const style = html`<style>
   stroke: rgba(0, 0, 0, 0.24);
   stroke: var(--mdc-outlined-color, rgba(0, 0, 0, 0.24));
 }
-.mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline__idle,
-.mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__icon:hover ~ .mdc-notched-outline__idle {
+.mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--readonly):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline__idle,
+.mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--readonly):not(.mdc-text-field--focused) .mdc-text-field__icon:hover ~ .mdc-notched-outline__idle {
   border-color: rgba(0, 0, 0, 0.87);
   border-color: var(--mdc-outlined-hover-color, rgba(0, 0, 0, 0.87));
 }
-.mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__path,
-.mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__icon:hover ~ .mdc-notched-outline .mdc-notched-outline__path {
+.mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--readonly):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__path,
+.mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--readonly):not(.mdc-text-field--focused) .mdc-text-field__icon:hover ~ .mdc-notched-outline .mdc-notched-outline__path {
   stroke: rgba(0, 0, 0, 0.87);
   stroke: var(--mdc-outlined-hover-color, rgba(0, 0, 0, 0.87));
 }
-.mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused .mdc-notched-outline__path {
+.mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--readonly).mdc-text-field--focused .mdc-notched-outline__path {
   stroke: #6200ee;
   /* @alternate */
   stroke: var(--mdc-theme-primary, #6200ee);
@@ -505,7 +505,7 @@ export const style = html`<style>
   right: 16px;
 }
 
-.mdc-text-field--outlined.mdc-text-field--focused .mdc-notched-outline__path {
+.mdc-text-field--outlined.mdc-text-field--focused:not(.mdc-text-field--readonly) .mdc-notched-outline__path {
   stroke-width: 2px;
 }
 
@@ -952,12 +952,12 @@ export const style = html`<style>
   align-self: flex-start;
 }
 
-.mdc-text-field--focused:not(.mdc-text-field--disabled) .mdc-floating-label {
+.mdc-text-field--focused:not(.mdc-text-field--disabled):not(.mdc-text-field--readonly) .mdc-floating-label {
   color: rgb(98, 0, 238);
   color: var(--mdc-label-color, rgb(98, 0, 238));
   opacity: 0.87;
 }
-.mdc-text-field--focused:not(.mdc-text-field--disabled) .mdc-text-field__input::placeholder {
+.mdc-text-field--focused:not(.mdc-text-field--disabled):not(.mdc-text-field--readonly) .mdc-text-field__input::placeholder {
   color: rgb(98, 0, 238);
   color: var(--mdc-label-color, rgb(98, 0, 238));
   opacity: 0.87;
@@ -969,12 +969,12 @@ export const style = html`<style>
   opacity: 1;
 }
 
-.mdc-text-field--textarea.mdc-text-field--focused:not(.mdc-text-field--disabled):not(.mdc-text-field--box) {
+.mdc-text-field--textarea.mdc-text-field--focused:not(.mdc-text-field--disabled):not(.mdc-text-field--readonly):not(.mdc-text-field--box) {
   border-color: #6200ee;
   /* @alternate */
   border-color: var(--mdc-theme-primary, #6200ee);
 }
-.mdc-text-field--textarea.mdc-text-field--focused:not(.mdc-text-field--disabled):not(.mdc-text-field--box) .mdc-text-field__input:focus {
+.mdc-text-field--textarea.mdc-text-field--focused:not(.mdc-text-field--disabled):not(.mdc-text-field--readonly):not(.mdc-text-field--box) .mdc-text-field__input:focus {
   border-color: #6200ee;
   /* @alternate */
   border-color: var(--mdc-theme-primary, #6200ee);

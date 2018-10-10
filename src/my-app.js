@@ -32,7 +32,7 @@ import './dialogs/create-account-dialog/create-account-dialog';
 
 class MyApp extends LitElement {
   render() {
-    const {_page, _snackbarOpened, _snackbarMessage, _offline, _signInDrawerOpened, _accountDrawerOpened, _cartDrawerOpened, signedIn, user, uid} = this;
+    const {_page, _snackbarOpened, _snackbarMessage, _offline, _signInDrawerOpened, _accountDrawerOpened, _cartDrawerOpened, signedIn, uid} = this;
     // Anything that's related to rendering should be done in here.
     return html`
     ${ButtonSharedStyles}
@@ -172,7 +172,7 @@ class MyApp extends LitElement {
     <account-drawer 
       @opened-changed="${e => this._updateDrawerState(e.detail.opened, signedIn)}"
       .opened="${_accountDrawerOpened}"
-      .user="${user}">
+      .uid="${uid}">
     </account-drawer>
 
     <cart-drawer 
@@ -212,7 +212,6 @@ class MyApp extends LitElement {
       _signInDrawerOpened: { type: Boolean },
       _accountDrawerOpened: { type: Boolean },
       _cartDrawerOpened: { type: Boolean },
-      user: {type: Object},
       uid: {type: String},
       signedIn: {type: Boolean}
     }
@@ -230,17 +229,10 @@ class MyApp extends LitElement {
     firebase.auth().onAuthStateChanged(user => {
       console.log('on auth state changed:', user)
       if (user) {
-        let userDetails = {
-          email: user.email,
-          displayName: user.displayName,
-          photoURL: user.photoURL,
-          uid: user.uid
-        }
-        this.user = userDetails;
         this.uid = user.uid;
         this.signedIn = true;
       } else {
-        this.user = {};
+        this.uid = null;
         this.signedIn = false;
       }
     });
@@ -411,7 +403,7 @@ class MyApp extends LitElement {
       items: {}
     };
     updates['items'][iid] = item;
-    firebase.firestore().doc(`carts/${this.user.uid}`).set(updates, {merge: true}).then(response => {
+    firebase.firestore().doc(`carts/${this.uid}`).set(updates, {merge: true}).then(response => {
       this.showSnackbar(`${item.name} added to cart.`)
     });
   }
@@ -421,7 +413,7 @@ class MyApp extends LitElement {
     let updates = {
       items: updatedCartItems
     };
-    firebase.firestore().doc(`carts/${this.user.uid}`).update(updates);
+    firebase.firestore().doc(`carts/${this.uid}`).update(updates);
   }
 }
 
