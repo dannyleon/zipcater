@@ -32,7 +32,7 @@ import './dialogs/create-account-dialog/create-account-dialog';
 
 class MyApp extends LitElement {
   render() {
-    const {_page, _snackbarOpened, _snackbarMessage, _offline, _signInDrawerOpened, _accountDrawerOpened, _cartDrawerOpened, signedIn, uid} = this;
+    const {_page, _snackbarOpened, _snackbarMessage, _offline, _signInDrawerOpened, _accountDrawerOpened, _cartDrawerOpened, signedIn, uid, cartLength} = this;
     // Anything that's related to rendering should be done in here.
     return html`
     ${ButtonSharedStyles}
@@ -142,6 +142,26 @@ class MyApp extends LitElement {
         right: 16px;
       }
 
+      mwc-fab[data-badge]:after {
+        content: attr(data-badge);
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        font-size:.7em;
+        background:black;
+        color: white;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+      }
+
+      mwc-fab[data-badge="0"]:after {
+        content: none;
+      }
+
       /* Wide layout: when the viewport width is bigger than 460px, layout
       changes to a wide layout. */
       @media (max-width: 460px) {
@@ -180,7 +200,8 @@ class MyApp extends LitElement {
       .opened="${_cartDrawerOpened}"
       .uid="${uid}"
       @delete-cart-item="${e => this._onDeleteCartItemEvent(e.detail)}"
-      @checkout="${e => this._onCheckoutEvent()}">
+      @checkout="${e => this._onCheckoutEvent()}"
+      @cart-length="${e => this._onCartLengthEvent(e.detail) }">
     </cart-drawer>
 
     <!-- Main content -->
@@ -196,7 +217,7 @@ class MyApp extends LitElement {
     
     <create-account-dialog id="createAccountDialog"></create-account-dialog>
 
-    <mwc-fab ?hidden="${_signInDrawerOpened || _cartDrawerOpened || _page === 'checkout'}" @click="${_ => this._updateCartDrawerState(true, signedIn)}">${cartIcon}</mwc-fab>
+    <mwc-fab data-badge="${cartLength}" ?hidden="${_signInDrawerOpened || _cartDrawerOpened || _page === 'checkout'}" @click="${_ => this._updateCartDrawerState(true, signedIn)}">${cartIcon}</mwc-fab>
 
     <snack-bar ?active="${_snackbarOpened}">${_snackbarMessage}</snack-bar>
     `;
@@ -205,6 +226,7 @@ class MyApp extends LitElement {
   static get properties() {
     return {
       appTitle: { type: String },
+      cartLength: {type: Number},
       _page: { type: String },
       _snackbarOpened: { type: Boolean },
       _snackbarMessage: { type: String },
@@ -222,6 +244,7 @@ class MyApp extends LitElement {
     this._signInDrawerOpened = false;
     this._accountDrawerOpened = false;
     this._cartDrawerOpened = false;
+    this.cartLength = 0;
     // To force all event listeners for gestures to be passive.
     // See https://www.polymer-project.org/3.0/docs/devguide/settings#setting-passive-touch-gestures
     setPassiveTouchGestures(true);
@@ -414,6 +437,11 @@ class MyApp extends LitElement {
       items: updatedCartItems
     };
     firebase.firestore().doc(`carts/${this.uid}`).update(updates);
+  }
+
+  _onCartLengthEvent(updatedCartLength) {
+    if (!updatedCartLength) return this.cartLength = 0;
+    this.cartLength = updatedCartLength;
   }
 }
 

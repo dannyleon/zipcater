@@ -129,6 +129,7 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
     updated(changedProperties) {
         console.log('changed properties:', changedProperties)
         const uidUpdated = changedProperties.has('uid');
+        const cartUpdated = changedProperties.has('cart');
        
         if (uidUpdated && this.argsArray) {
             console.log('args array:', this.argsArray);
@@ -136,6 +137,11 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
                 var argsArr = argsObject.args
                 this._firestoreUpdateBinding(argsObject.name, ...argsArr.map(x => this[x]))
             });
+        }
+
+        if (cartUpdated) {
+            let cartLength = (this.cart && this.cart.items) ? Object.keys(this.cart.items).length : 0;
+            this.dispatchEvent(new CustomEvent('cart-length', {detail: cartLength}))
         }
     }
 
