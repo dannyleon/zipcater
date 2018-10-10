@@ -117,7 +117,7 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
                             ${this.cart ? (repeat(Object.entries(this.cart.items), item => html `
                                 <single-cart-item @remove-item="${_ => this._onSingleCartItemClick(this.cart.items, item[0])}" .iid="${item[0]}" .item="${item[1]}"></single-cart-item>
                             `)) : ""}
-                            <div ?hidden="${(this.cart && this.cart.items) ? (Object.keys(this.cart.items).length !== 0) : true}" class="empty">Shopping cart is empty</div>
+                            <div ?hidden="${this.cartLength !== 0}" class="empty">Shopping cart is empty</div>
                         </div>
                         <div class="total">subtotal<div class="total-number">${this._computeCartTotal(this.cart)}</div></div>
                         <mwc-button @click="${_ => this._onCheckoutClick()}" class="checkout" unelevated>checkout</mwc-button>
@@ -147,6 +147,7 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
         if (cartUpdated) {
             let cartLength = (this.cart && this.cart.items) ? Object.keys(this.cart.items).length : 0;
             this.dispatchEvent(new CustomEvent('cart-length', {detail: cartLength}))
+            this.cartLength = cartLength;
         }
     }
 
@@ -155,6 +156,7 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
     }
 
     _onCheckoutClick() {
+        if (!this.cartLength) return this.openSnackbar('Add items before checking out.');
         this.dispatchEvent(new CustomEvent('checkout'));
         this.opened = false;
     }
