@@ -114,7 +114,7 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
                         </div>
                         <div class="content">
                             ${this.cart ? (repeat(Object.entries(this.cart.items), item => html `
-                                <single-cart-item @click="${_ => this._onSingleCartItemClick(this.cart.items, item[0])}" .iid="${item[0]}" .item="${item[1]}"></single-cart-item>
+                                <single-cart-item @remove-item="${_ => this._onSingleCartItemClick(this.cart.items, item[0])}" .iid="${item[0]}" .item="${item[1]}"></single-cart-item>
                             `)) : ""}
                             <div ?hidden="${this.cart ? (Object.keys(this.cart.items).length !== 0) : true}" class="empty">Shopping cart is empty</div>
                         </div>
