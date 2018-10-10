@@ -54,9 +54,7 @@ class ItemView extends FirestoreMixin(PageViewElement) {
                 }
 
                 .subtitle {
-                    font-weight: 700;
-                    font-style: italic;
-                    font-size: 14px;
+                    font-weight: 300;
                 }
 
                 .description {

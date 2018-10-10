@@ -75,10 +75,8 @@ class MenuView extends FirestoreMixin(PageViewElement) {
                 }
 
                 .restaurant-details .cuisine {
-                    font-weight: 700;
-                    font-style: italic;
+                    font-weight: 300;
                     margin-bottom: 12px;
-                    font-size: 14px;
                 }
 
                 .category-toolbar {
@@ -112,9 +110,6 @@ class MenuView extends FirestoreMixin(PageViewElement) {
                     }
 
                     .restaurant-details .cuisine {
-                        font-weight: 700;
-                        font-style: italic;
-                        margin-bottom: 12px;
                         font-size: 12px;
                     }
 
