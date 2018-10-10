@@ -344,6 +344,8 @@ class MyApp extends LitElement {
   }
 
   _updateCartDrawerState(opened, signedIn) {
+    console.log('updating drawer state:', opened, signedIn)
+    console.log('current cart drawer:', this._cartDrawerOpened)
     if (opened && !signedIn) return this.showSnackbar('Please sign in to see shopping cart.');
     
     if (opened !== this._cartDrawerOpened) {
@@ -418,6 +420,7 @@ class MyApp extends LitElement {
   }
 
   _onAddToCartEvent(item, qty) {
+    if (!this.uid) return this.showSnackbar('Sign in to add items to cart.')
     console.log('add to cart event:', item, qty);
     const iid = item.__id__;
     delete item['__id__'];

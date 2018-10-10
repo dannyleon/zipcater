@@ -43,6 +43,10 @@ class SingleCartItem extends LitElement {
                 mwc-icon:hover svg {
                     fill: var(--app-secondary-color);
                 }
+
+                :host([noRemoveIcon]) mwc-icon {
+                    display: none;
+                }
             </style>
             
             <div>${this.item.quantity} x</div>

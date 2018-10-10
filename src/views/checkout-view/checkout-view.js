@@ -204,7 +204,7 @@ class CheckoutView extends FirestoreMixin(PageViewElement) {
                 <div class="header">Order summary</div>
                 <div class="delivery-container">
                     ${this.cart ? (repeat(Object.entries(this.cart.items), item => html `
-                        <single-cart-item .iid="${item[0]}" .item="${item[1]}"></single-cart-item>
+                        <single-cart-item .iid="${item[0]}" .item="${item[1]}" noRemoveIcon></single-cart-item>
                     `)) : ""}
                     <div ?hidden="${this.cart ? (Object.keys(this.cart.items).length !== 0) : true}" class="empty">Shopping cart is empty</div>
                     
@@ -224,7 +224,7 @@ class CheckoutView extends FirestoreMixin(PageViewElement) {
         const cartUpdated = changedProperties.has('cart');
         const activeUpdated = changedProperties.has('active');
        
-        if (uidUpdated && this.argsArray) {
+        if ((uidUpdated && this.argsArray) || (this.uid && !this.cart && this.argsArray)) {
             this.argsArray.forEach(argsObject => {
                 var argsArr = argsObject.args
                 this._firestoreUpdateBinding(argsObject.name, ...argsArr.map(x => this[x]))
@@ -237,10 +237,14 @@ class CheckoutView extends FirestoreMixin(PageViewElement) {
     }
 
     _computeSummaryProperties() {
+        console.log('computing summary properties:', this.cart)
+        if (!this.cart) return;
         let subtotal = this._computeCartTotal(this.cart);
         let tax = this._computeTax(subtotal);
         let deliveryFee = this._computeDeliveryFee(subtotal);
         let total = this._roundMoney(subtotal + tax + deliveryFee);
+
+        console.log('cart summary:', subtotal, tax, deliveryFee, total)
 
         this.subtotal = subtotal;
         this.tax = tax;

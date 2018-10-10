@@ -109,6 +109,7 @@ class AccountDrawer extends FirestoreMixin(DrawerElement) {
                 mwc-button {
                     --mdc-theme-primary: var(--app-dark-secondary-color);
                     --mdc-border-radius: 0;
+                    --mdc-button-height: 48px;
                 }
 
                 mwc-button.edit-profile, mwc-button.discard-changes {
@@ -147,11 +148,16 @@ class AccountDrawer extends FirestoreMixin(DrawerElement) {
 
     updated(changedProperties) {
         console.log('changed properties:', changedProperties)
+        
         const uidUpdated = changedProperties.has('uid');
         const openedUpdated = changedProperties.has('opened');
         const editingUpdated = changedProperties.has('editing');
        
         if (uidUpdated && this.argsArray) {
+            if (!this.uid) {
+                if (this.user) this.user  = null;
+                return;
+            }
             console.log('args array:', this.argsArray);
             this.argsArray.forEach(argsObject => {
                 var argsArr = argsObject.args

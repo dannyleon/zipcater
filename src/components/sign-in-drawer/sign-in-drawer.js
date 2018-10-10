@@ -1,15 +1,13 @@
-import {LitElement, html} from '@polymer/lit-element';
+import {html} from '@polymer/lit-element';
+import {DrawerElement} from '../drawer-element'
 import '@polymer/app-layout/app-drawer/app-drawer.js';
 import '@material/mwc-button';
 import '../../components/mwc-textfield/mwc-textfield';
 import '../snack-bar';
 
-class SignInDrawer extends LitElement {
+class SignInDrawer extends DrawerElement {
     static get properties() {
         return {
-            opened: Boolean,
-            _snackbarOpened: Boolean,
-            _snackbarMessage: String,
         }
     }
 
@@ -96,10 +94,6 @@ class SignInDrawer extends LitElement {
         this.dispatchEvent(new CustomEvent('opened-changed', {detail: {opened: opened}}));
     }
 
-    _onInputChange(value) {
-        console.log('on input change:', value)
-    }
-
     _onSignInClick() {
         console.log('on sign in click...')
         let em = this.shadowRoot.querySelector('#em').value;
@@ -111,6 +105,20 @@ class SignInDrawer extends LitElement {
             console.log('sign in error:', err)
             this.showErrorSnackbar(err.code);
         });
+    }
+
+    updated(changedProperties) {
+        console.log('changed properties:', changedProperties) 
+        const openedUpdated = changedProperties.has('opened');
+       
+        if (openedUpdated) {
+            if (!this.opened) this._resetInputs();
+        }
+    }
+
+    _resetInputs() {
+        this.shadowRoot.querySelector('#em').value = null;
+        this.shadowRoot.querySelector('#pa').value = null;
     }
 
     _onCreateAccountClick() {
@@ -137,10 +145,7 @@ class SignInDrawer extends LitElement {
                 errMessage = 'Unable to sign in, please try again or contact support.'
                 break;
         }
-        clearTimeout(this.__snackbarTimer);
-        this._snackbarMessage = errMessage;
-        this._snackbarOpened = true;
-        this.__snackbarTimer = setTimeout(() => { this._snackbarOpened = false }, 3000);
+        this.openSnackbar(errMessage);
     }
 
 }

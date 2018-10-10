@@ -130,6 +130,16 @@ export class Textfield extends ComponentElement {
     this._input = this.shadowRoot.querySelector('input');
   }
 
+  set value(value) {
+    this.componentReady().then((component) => {
+      component.foundation_.setValue(value);
+    });
+  }
+
+  get value() {
+    return this._component && this._component.foundation_.getValue();
+  }
+
   get valid() {
     return this._component && this._component.foundation_.isValid();
   }

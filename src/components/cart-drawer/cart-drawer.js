@@ -78,6 +78,7 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
                     --mdc-theme-primary: var(--app-dark-secondary-color);
                     --mdc-theme-on-primary: white;
                     --mdc-border-radius: 0;
+                    --mdc-button-height: 48px;
                 }
 
                 single-cart-item {
@@ -116,7 +117,7 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
                             ${this.cart ? (repeat(Object.entries(this.cart.items), item => html `
                                 <single-cart-item @remove-item="${_ => this._onSingleCartItemClick(this.cart.items, item[0])}" .iid="${item[0]}" .item="${item[1]}"></single-cart-item>
                             `)) : ""}
-                            <div ?hidden="${this.cart ? (Object.keys(this.cart.items).length !== 0) : true}" class="empty">Shopping cart is empty</div>
+                            <div ?hidden="${(this.cart && this.cart.items) ? (Object.keys(this.cart.items).length !== 0) : true}" class="empty">Shopping cart is empty</div>
                         </div>
                         <div class="total">subtotal<div class="total-number">${this._computeCartTotal(this.cart)}</div></div>
                         <mwc-button @click="${_ => this._onCheckoutClick()}" class="checkout" unelevated>checkout</mwc-button>
@@ -132,6 +133,10 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
         const cartUpdated = changedProperties.has('cart');
        
         if (uidUpdated && this.argsArray) {
+            if (!this.uid) {
+                if (this.cart) this.cart = null;
+                return;
+            }
             console.log('args array:', this.argsArray);
             this.argsArray.forEach(argsObject => {
                 var argsArr = argsObject.args
