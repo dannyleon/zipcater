@@ -31,7 +31,9 @@
     "@polymer/lit-element": "^0.6.1",
     "@polymer/polymer": "^3.0.0",
     "@webcomponents/webcomponentsjs": "^2.0.0",
-    "pwa-helpers": "^0.8.2"
+    "pwa-helpers": "^0.8.2",
+    "blocking-elements": "0.0.2",
+    "wicg-inert": "^2.0.0"
   },
   "optionalDependencies": {
     "@material/mwc-button": "^0.2.1",
