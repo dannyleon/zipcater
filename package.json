@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@material/dialog": "^0.40.0",
+    "@material/line-ripple": "^0.40.1",
     "@material/mwc-fab": "^0.2.1",
     "@material/mwc-icon": "^0.2.1",
     "@material/rtl": "^0.39.1",
@@ -31,8 +32,8 @@
     "@polymer/lit-element": "^0.6.1",
     "@polymer/polymer": "^3.0.0",
     "@webcomponents/webcomponentsjs": "^2.0.0",
-    "pwa-helpers": "^0.8.2",
     "blocking-elements": "0.0.2",
+    "pwa-helpers": "^0.8.2",
     "wicg-inert": "^2.0.0"
   },
   "optionalDependencies": {
