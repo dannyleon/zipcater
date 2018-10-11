@@ -35,7 +35,12 @@
     "@webcomponents/webcomponentsjs": "^2.0.0",
     "blocking-elements": "0.0.2",
     "pwa-helpers": "^0.8.2",
-    "wicg-inert": "^2.0.0"
+    "wicg-inert": "^2.0.0",
+    "@material/animation": "^0.39.0",
+    "@material/base": "^0.39.0",
+    "@material/notched-outline": "^0.40.0",
+    "@material/ripple": "^0.40.0",
+    "@material/shape": "^0.40.0"
   },
   "optionalDependencies": {
     "@material/mwc-button": "^0.2.1",
