@@ -1,0 +1,21 @@
+steps:
+- id: 'Install node modules'
+  name: 'gcr.io/cloud-builders/npm'
+  args: ['install', '--no-optional']
+
+- id: 'Install dev dependencies'
+  name: 'gcr.io/cloud-builders/npm'
+  args: ['install', '--only=dev']
+
+- id: 'Polymer build'
+  name: 'gcr.io/$PROJECT_ID/polymer'
+  args: ['build', '--auto-base-path']
+
+- id: 'prlp-server build'
+  name: 'gcr.io/$PROJECT_ID/gulp'
+  args: ['prpl-server']
+
+- id: 'Deploy'
+  name: 'gcr.io/cloud-builders/gcloud'
+  args: ['app', 'deploy', 'server/app.yaml']
+timeout: 1800s
