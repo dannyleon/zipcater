@@ -24,8 +24,8 @@ class CreateAccountDialog extends LitElement {
                 }
                 
                 .submit-button {
-                    --mdc-theme-primary: var(--app-dark-tertiary-color);
-                    --mdc-theme-on-primary: white;
+                    --mdc-theme-primary: var(--app-tertiary-color);
+                    --mdc-theme-on-primary: black;
                 }
 
                 [main-title] {

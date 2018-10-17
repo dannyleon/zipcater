@@ -121,8 +121,8 @@ export class Textfield extends ComponentElement {
   }
 
   _changeHandler(e) {
-    console.log('change handler:', e)
     this.value = e.target.value;
+    this.dispatchEvent(new CustomEvent('input-change', {detail: e.target.value}));
   }
 
   firstUpdated() {

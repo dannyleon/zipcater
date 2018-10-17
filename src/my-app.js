@@ -38,7 +38,7 @@ class MyApp extends LitElement {
     ${ButtonSharedStyles}
     <style>
       :host {
-        --app-drawer-width: 296px;
+        --app-drawer-width: 280px;
         display: block;
 
         --app-primary-color: #fafafa;
@@ -168,7 +168,7 @@ class MyApp extends LitElement {
           margin-right: var(--app-drawer-width);
           border-right: 1px solid var(--app-border-color);
         }
-        cart-drawer {
+        cart-drawer, sign-in-drawer {
           --content-padding-top: 64px;
           --drawer-z-index: 0;
         }
@@ -198,7 +198,8 @@ class MyApp extends LitElement {
     <sign-in-drawer 
       @opened-changed="${e => this._updateDrawerState(e.detail.opened, signedIn)}"
       @create-account="${e => this._openCreateAccountDialog()}" 
-      .opened="${_signInDrawerOpened}">
+      .opened="${_signInDrawerOpened}"
+      .persistent="${this._wideLayout}">
     </sign-in-drawer>
 
     <account-drawer 
@@ -268,10 +269,19 @@ class MyApp extends LitElement {
       if (user) {
         this.uid = user.uid;
         this.signedIn = true;
-        if (this._wideLayout) this._updateCartDrawerState(true, true);
+        if (this._wideLayout) {
+          this._accountDrawerOpened = false;
+          this._cartDrawerOpened = true;
+          this._signInDrawerOpened = false;
+        } 
       } else {
         this.uid = null;
         this.signedIn = false;
+        if (this._wideLayout) {
+          this._accountDrawerOpened = false;
+          this._cartDrawerOpened = false;
+          this._signInDrawerOpened = true;
+        }
       }
     });
   }
@@ -297,7 +307,11 @@ class MyApp extends LitElement {
   _layoutChanged(isWideLayout) {
     this._wideLayout = isWideLayout;
     // The drawer doesn't make sense in a wide layout, so if it's opened, close it.
-    this._updateCartDrawerState(isWideLayout, this.signedIn);
+    if (this.signedIn) {
+      this._updateCartDrawerState(isWideLayout, this.signedIn);
+    } else {
+      this._updateDrawerState(isWideLayout, this.signedIn);
+    }
   }
 
   _offlineChanged(offline) {
@@ -348,21 +362,20 @@ class MyApp extends LitElement {
   }
 
   _updateDrawerState(opened, signedIn) {
+    console.log('updating sign in drawer state:', opened, signedIn)
+    if (this._wideLayout && !signedIn && !opened) return;
     if (!signedIn) {
-      if (opened !== this._signInDrawerOpened) {
-        this._signInDrawerOpened = opened;
-      }
+      this._signInDrawerOpened = opened;
     } else {
-        if (opened !== this._accountDrawerOpened) {
-          this._accountDrawerOpened = opened;
-        }
+      this._accountDrawerOpened = opened;
     }
   }
 
   _updateCartDrawerState(opened, signedIn) {
-    console.log('updating drawer state:', opened, signedIn)
+    console.log('updating cart drawer state:', opened, signedIn)
     console.log('is wide layout:', this._wideLayout)
     if (this._wideLayout && !opened) return;
+    if (!signedIn) return;
     if (opened !== this._cartDrawerOpened) {
       this._cartDrawerOpened = opened;
     }
@@ -427,6 +440,7 @@ class MyApp extends LitElement {
   _openCreateAccountDialog() {
     console.log('create account event...');
     this.shadowRoot.querySelector('#createAccountDialog').show();
+    if (!this._wideLayout) this._updateDrawerState(false)
     // import('./dialogs/create-account-dialog/create-account-dialog.js').then((module) => {
     //   console.log('create-account-dialog imported:', module)
     //   this.shadowRoot.querySelector('#createAccountDialog').show();

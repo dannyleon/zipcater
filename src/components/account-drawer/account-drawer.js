@@ -3,6 +3,7 @@ import {DrawerElement} from '../drawer-element'
 import '@polymer/app-layout/app-drawer/app-drawer.js';
 import '@material/mwc-button';
 import '../../components/mwc-textfield/mwc-textfield.js';
+import '../../components/address-input/address-input.js';
 import {FirestoreMixin} from '../../mixins/firestore-mixin/firestore-mixin';
 import '../snack-bar';
 import { editIcon } from '../../my-icons.js';
@@ -87,9 +88,20 @@ class AccountDrawer extends FirestoreMixin(DrawerElement) {
                     flex-direction: column;
                 }
 
-                .header {
-                    font-size: 20px;
+                .header, .address-header {
+                    font-size: 18px;
                     font-weight: 800;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                }
+
+                .address-header {
+                    height: 32px;
+                }
+
+                address-input {
+                    margin: 8px 0;
                 }
 
                 mwc-textfield.details {
@@ -116,6 +128,10 @@ class AccountDrawer extends FirestoreMixin(DrawerElement) {
                     margin-top: auto;
                 }
 
+                mwc-button.add-address {
+                    --mdc-border-radius: 24px;
+                }
+
                 [hidden] {
                     display: none;
                 }
@@ -133,6 +149,11 @@ class AccountDrawer extends FirestoreMixin(DrawerElement) {
                             <mwc-textfield id="userName" labelAlwaysFloat ?readonly="${!this.editing}" label="name" class="details" outlined fullWidth placeholder="${(this.user && this.user.name) ? this.user.name : "add name"}"></mwc-textfield>
                             <mwc-textfield id="userEmail" labelAlwaysFloat ?readonly="${!this.editing}" label="email" class="details" outlined fullWidth placeholder="${(this.user && this.user.email) ? this.user.email : "add email"}"></mwc-textfield>
                             <mwc-textfield id="userPhone" labelAlwaysFloat ?readonly="${!this.editing}" label="phone" class="details" outlined fullWidth placeholder="${(this.user && this.user.phone) ? this.user.phone : "add phone"}"></mwc-textfield>
+                        </div>
+
+                        <div class="account-details">
+                            <div class="address-header">Saved addresses<mwc-button ?hidden="${!this.editing}" icon="add" @click="${_ => this._onAddAddress()}" class="add-address" dense outlined>add</mwc-button></div>
+                            <address-input .readonly="${!this.editing}" outlined fullWidth label="add address"></address-input>
                         </div>
 
                         <mwc-button ?hidden="${!this.editing}" @click="${_ => this._onDiscardChanges()}" class="discard-changes">cancel</mwc-button>

@@ -8,6 +8,7 @@ import '../snack-bar';
 class SignInDrawer extends DrawerElement {
     static get properties() {
         return {
+            persistent: Boolean,
         }
     }
 
@@ -25,8 +26,9 @@ class SignInDrawer extends DrawerElement {
                     height: 100%;
                     padding: 24px;
                     position: relative;
-                    background: var(--app-dark-secondary-color);
-                    color: white;
+                    background: white;
+                    color: var(--app-tertiary-color);
+                    padding-top: var(--content-padding-top);
 
                     display: flex;
                     flex-direction: column;
@@ -34,7 +36,7 @@ class SignInDrawer extends DrawerElement {
                 }
 
                 app-drawer {
-                    z-index: 1;
+                    z-index: var(--drawer-z-index, 1);
                 }
 
                 [main-title] {
@@ -42,6 +44,7 @@ class SignInDrawer extends DrawerElement {
                     text-transform: lowercase;
                     font-size: 24px;
                     text-align: start;
+                    padding: 14px 0;
                 }
 
                 [main-title] .left {
@@ -53,10 +56,10 @@ class SignInDrawer extends DrawerElement {
                 }
 
                 mwc-textfield {
-                    --mdc-theme-primary: white;
-                    --mdc-label-color: rgb(360, 360, 360);
-                    --mdc-outlined-color: rgba(360, 360, 360, 0.24);
-                    --mdc-outlined-hover-color: rgba(360, 360, 360, 0.87);
+                    --mdc-theme-primary: black;
+                    --mdc-label-color: rgb(0, 0, 0);
+                    --mdc-outlined-color: rgba(0, 0, 0, 0.24);
+                    --mdc-outlined-hover-color: rgba(0, 0, 0, 0.87);
                     margin: 8px 0;
                 }
 
@@ -67,13 +70,12 @@ class SignInDrawer extends DrawerElement {
                 }
 
                 mwc-button.sign-in {
-                    --mdc-theme-primary: var(--app-primary-color);
-                    --mdc-theme-on-primary: black;
+                    --mdc-theme-primary: black;
                     margin-top: 8px;
                 }
             </style>
 
-            <app-drawer align="end" .opened="${this.opened}"
+            <app-drawer .persistent="${this.persistent}" align="end" .opened="${this.opened}"
                 @opened-changed="${e => this._updateDrawerState(e.target.opened)}">
                     <div class="drawer-list sign-in-container">
                         <div main-title>
@@ -81,7 +83,7 @@ class SignInDrawer extends DrawerElement {
                         </div>
                         <mwc-textfield id="em" outlined fullWidth label="email"></mwc-textfield>
                         <mwc-textfield id="pa" outlined fullWidth label="password" type="password"></mwc-textfield>
-                        <mwc-button @click="${_ => this._onSignInClick()}" class="sign-in" unelevated>sign in</mwc-button>
+                        <mwc-button @click="${_ => this._onSignInClick()}" class="sign-in" outlined>sign in</mwc-button>
                         <mwc-button @click="${_ => this._onCreateAccountClick()}" class="create" unelevated>create account</mwc-button>
                         <snack-bar class="drawer" ?active="${this._snackbarOpened}">${this._snackbarMessage}</snack-bar>
                     </div>
@@ -123,7 +125,6 @@ class SignInDrawer extends DrawerElement {
 
     _onCreateAccountClick() {
         this.dispatchEvent(new CustomEvent('create-account'));
-        this.opened = false;
     }
 
     showErrorSnackbar(errorCode) {

@@ -23,7 +23,8 @@ class SingleCartItem extends LitElement {
                     align-items: center;
                     border-bottom: 1px solid var(--app-border-color);
                     padding: 16px 0;
-                    font-weight: 700;
+                    font-weight: 500;
+                    font-size: 14px;
                 }
 
                 .price {

@@ -45,6 +45,13 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
                     flex-direction: column;
                 }
 
+                .drawer-list.sign-in-view {
+                    color: black;
+                    font-size: 20px;
+                    align-items: center;
+                    justify-content: center;
+                }
+
                 .content {
                     padding: 0 16px 16px;
                 }
@@ -77,7 +84,7 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
                     font-weight: 800;
                 }
 
-                mwc-button.checkout {
+                mwc-button {
                     --mdc-theme-primary: var(--app-dark-secondary-color);
                     --mdc-theme-on-primary: white;
                     --mdc-border-radius: 0;
@@ -106,11 +113,15 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
                     padding: 16px 0;
                     font-weight: 700;
                 }
+
+                [hidden] {
+                    display: none;
+                }
             </style>
 
             <app-drawer .persistent="${this.persistent}" align="end" .opened="${this.opened}"
                 @opened-changed="${e => this._updateDrawerState(e.target.opened)}">
-                    <div class="drawer-list">
+                    <div ?hidden="${!this.cart}" class="drawer-list">
                         <div main-title>
                             <mwc-icon>${cartIcon}</mwc-icon>
                             <span class="left">shopping</span>
@@ -126,8 +137,16 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
                         <mwc-button @click="${_ => this._onCheckoutClick()}" class="checkout" unelevated>checkout</mwc-button>
                         <snack-bar class="drawer" ?active="${this._snackbarOpened}">${this._snackbarMessage}</snack-bar>
                     </div>
+                    <div ?hidden="${this.cart}" class="drawer-list sign-in-view">
+                        <div>log in to view cart</div>
+                        <mwc-button class="sign-in" @click="${_ => this._onSignInClick()}" unelevated>sign in</mwc-button>
+                    </div>
             </app-drawer>   
         `;
+    }
+
+    _onSignInClick() {
+        this.dispatchEvent(new CustomEvent('sign-in'));
     }
 
     updated(changedProperties) {
