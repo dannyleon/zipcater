@@ -38,7 +38,7 @@ class MyApp extends LitElement {
     ${ButtonSharedStyles}
     <style>
       :host {
-        --app-drawer-width: 320px;
+        --app-drawer-width: 296px;
         display: block;
 
         --app-primary-color: #fafafa;
@@ -73,7 +73,7 @@ class MyApp extends LitElement {
         position: fixed;
         top: 0;
         left: 0;
-        width: 100%;
+        right: 0;
         text-align: center;
         background-color: var(--app-header-background-color);
         color: var(--app-header-text-color);
@@ -162,6 +162,18 @@ class MyApp extends LitElement {
         content: none;
       }
 
+           /* Wide layout */
+     @media (min-width: 768px) {
+        .main-content {
+          margin-right: var(--app-drawer-width);
+          border-right: 1px solid var(--app-border-color);
+        }
+        cart-drawer {
+          --content-padding-top: 64px;
+          --drawer-z-index: 0;
+        }
+      }
+
       /* Wide layout: when the viewport width is bigger than 460px, layout
       changes to a wide layout. */
       @media (max-width: 460px) {
@@ -172,7 +184,7 @@ class MyApp extends LitElement {
     </style>
 
     <!-- Header -->
-    <app-header condenses reveals effects="waterfall">
+    <app-header fixed effects="waterfall">
       <app-toolbar class="toolbar-top">
         <div class="main-title">
           <button @click="${_ => this._homeButtonClick()}">
@@ -201,7 +213,8 @@ class MyApp extends LitElement {
       .uid="${uid}"
       @delete-cart-item="${e => this._onDeleteCartItemEvent(e.detail)}"
       @checkout="${e => this._onCheckoutEvent()}"
-      @cart-length="${e => this._onCartLengthEvent(e.detail) }">
+      @cart-length="${e => this._onCartLengthEvent(e.detail) }"
+      .persistent="${this._wideLayout}">
     </cart-drawer>
 
     <!-- Main content -->
@@ -231,6 +244,7 @@ class MyApp extends LitElement {
       _snackbarOpened: { type: Boolean },
       _snackbarMessage: { type: String },
       _offline: { type: Boolean },
+      _wideLayout: { type: Boolean },
       _signInDrawerOpened: { type: Boolean },
       _accountDrawerOpened: { type: Boolean },
       _cartDrawerOpened: { type: Boolean },
@@ -254,6 +268,7 @@ class MyApp extends LitElement {
       if (user) {
         this.uid = user.uid;
         this.signedIn = true;
+        if (this._wideLayout) this._updateCartDrawerState(true, true);
       } else {
         this.uid = null;
         this.signedIn = false;
@@ -264,7 +279,7 @@ class MyApp extends LitElement {
   firstUpdated() {
     installRouter((location) => this._locationChanged(location));
     installOfflineWatcher((offline) => this._offlineChanged(offline));
-    installMediaQueryWatcher(`(min-width: 460px)`,
+    installMediaQueryWatcher(`(min-width: 768px)`,
         (matches) => this._layoutChanged(matches));
   }
 
@@ -280,8 +295,9 @@ class MyApp extends LitElement {
   }
 
   _layoutChanged(isWideLayout) {
+    this._wideLayout = isWideLayout;
     // The drawer doesn't make sense in a wide layout, so if it's opened, close it.
-    this._updateDrawerState(false, this.signedIn);
+    this._updateCartDrawerState(isWideLayout, this.signedIn);
   }
 
   _offlineChanged(offline) {
@@ -345,9 +361,8 @@ class MyApp extends LitElement {
 
   _updateCartDrawerState(opened, signedIn) {
     console.log('updating drawer state:', opened, signedIn)
-    console.log('current cart drawer:', this._cartDrawerOpened)
-    if (opened && !signedIn) return this.showSnackbar('Please sign in to see shopping cart.');
-    
+    console.log('is wide layout:', this._wideLayout)
+    if (this._wideLayout && !opened) return;
     if (opened !== this._cartDrawerOpened) {
       this._cartDrawerOpened = opened;
     }
@@ -406,6 +421,7 @@ class MyApp extends LitElement {
     console.log('checkout click event...');
     window.history.pushState({}, '', '/checkout');
     this._locationChanged();
+    if (!this._wideLayout) this._updateCartDrawerState(false)
   }
 
   _openCreateAccountDialog() {

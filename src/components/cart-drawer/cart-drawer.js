@@ -18,7 +18,9 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
                 doc: 'carts/{uid}',
                 live: true
             },
-            argsArray: Array
+            argsArray: Array,
+            persistent: Boolean,
+            cartLength: Number
         }
     }
 
@@ -37,6 +39,7 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
                     position: relative;
                     color: var(--app-dark-secondary-color);
                     background: white;
+                    padding-top: var(--content-padding-top);
 
                     display: flex;
                     flex-direction: column;
@@ -47,11 +50,11 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
                 }
 
                 app-drawer {
-                    z-index: 1;
+                    z-index: var(--drawer-z-index, 1);
                 }
 
                 [main-title] {
-                    padding: 16px;
+                    padding: 14px 16px;
                     text-transform: lowercase;
                     font-size: 24px;
                     text-align: start;
@@ -105,7 +108,7 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
                 }
             </style>
 
-            <app-drawer align="end" .opened="${this.opened}"
+            <app-drawer .persistent="${this.persistent}" align="end" .opened="${this.opened}"
                 @opened-changed="${e => this._updateDrawerState(e.target.opened)}">
                     <div class="drawer-list">
                         <div main-title>
@@ -158,7 +161,6 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
     _onCheckoutClick() {
         if (!this.cartLength) return this.openSnackbar('Add items before checking out.');
         this.dispatchEvent(new CustomEvent('checkout'));
-        this.opened = false;
     }
 
     _computeCartTotal(cart) {
