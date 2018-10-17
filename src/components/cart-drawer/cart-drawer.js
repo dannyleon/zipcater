@@ -113,15 +113,11 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
                     padding: 16px 0;
                     font-weight: 700;
                 }
-
-                [hidden] {
-                    display: none;
-                }
             </style>
 
             <app-drawer .persistent="${this.persistent}" align="end" .opened="${this.opened}"
                 @opened-changed="${e => this._updateDrawerState(e.target.opened)}">
-                    <div ?hidden="${!this.cart}" class="drawer-list">
+                    <div class="drawer-list">
                         <div main-title>
                             <mwc-icon>${cartIcon}</mwc-icon>
                             <span class="left">shopping</span>
@@ -137,18 +133,10 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
                         <mwc-button @click="${_ => this._onCheckoutClick()}" class="checkout" unelevated>checkout</mwc-button>
                         <snack-bar class="drawer" ?active="${this._snackbarOpened}">${this._snackbarMessage}</snack-bar>
                     </div>
-                    <div ?hidden="${this.cart}" class="drawer-list sign-in-view">
-                        <div>log in to view cart</div>
-                        <mwc-button class="sign-in" @click="${_ => this._onSignInClick()}" unelevated>sign in</mwc-button>
-                    </div>
             </app-drawer>   
         `;
     }
-
-    _onSignInClick() {
-        this.dispatchEvent(new CustomEvent('sign-in'));
-    }
-
+    
     updated(changedProperties) {
         console.log('changed properties:', changedProperties)
         const uidUpdated = changedProperties.has('uid');
