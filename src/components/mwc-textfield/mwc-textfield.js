@@ -103,7 +103,7 @@ export class Textfield extends ComponentElement {
       <div class="mdc-text-field mdc-text-field--upgraded ${classMap(hostClassInfo)}">
         ${!fullWidth && icon ? html`<i class="material-icons mdc-text-field__icon" tabindex="0">${icon}</i>` : ''}
         ${this._renderInput({value, required, type, placeHolder, label, textarea, readonly})}
-        ${label ? html`<label class="mdc-floating-label ${(labelAlwaysFloat || value) ? 'mdc-floating-label--float-above' : ''}" for="text-field">${label}</label>` : ''}
+        <label class="mdc-floating-label ${(labelAlwaysFloat || value) ? 'mdc-floating-label--float-above' : ''}" for="text-field">${label}</label>
         ${outlined ? 
           html`
             <div class="mdc-notched-outline">

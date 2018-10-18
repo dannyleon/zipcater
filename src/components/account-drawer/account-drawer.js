@@ -3,10 +3,11 @@ import {DrawerElement} from '../drawer-element'
 import '@polymer/app-layout/app-drawer/app-drawer.js';
 import '@material/mwc-button';
 import '../../components/mwc-textfield/mwc-textfield.js';
-import '../../components/address-input/address-input.js';
 import {FirestoreMixin} from '../../mixins/firestore-mixin/firestore-mixin';
 import '../snack-bar';
+import './single-address';
 import { editIcon } from '../../my-icons.js';
+import { repeat } from 'lit-html/directives/repeat';
 
 class AccountDrawer extends FirestoreMixin(DrawerElement) {
     static get properties() {
@@ -54,6 +55,12 @@ class AccountDrawer extends FirestoreMixin(DrawerElement) {
                     text-align: start;
                 }
 
+                .scrollable {
+                    height: calc(100% - 283px);
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                }
+
                 :host([editing]) .drawer-list {
                     background-position: right bottom;
                     color: white;
@@ -88,6 +95,12 @@ class AccountDrawer extends FirestoreMixin(DrawerElement) {
                     flex-direction: column;
                 }
 
+                .delivery-details {
+                    padding: 0 16px;
+                    display: flex;
+                    flex-direction: column;
+                }
+
                 .header, .address-header {
                     font-size: 18px;
                     font-weight: 800;
@@ -97,6 +110,7 @@ class AccountDrawer extends FirestoreMixin(DrawerElement) {
                 }
 
                 .address-header {
+                    margin-bottom: 8px;
                     height: 32px;
                 }
 
@@ -129,32 +143,66 @@ class AccountDrawer extends FirestoreMixin(DrawerElement) {
                 }
 
                 mwc-button.add-address {
+                    --mdc-theme-primary: black;
                     --mdc-border-radius: 24px;
                 }
 
                 [hidden] {
                     display: none;
                 }
+
+                single-address, .empty {
+                    font-size: 12px;
+                    border-radius: 5px;
+                    padding: 8px;
+                    text-align: center;
+                    color: black;
+                    margin: 4px 0;
+                    background-color: var(--app-fill-color);
+                    position: relative;
+                    box-sizing: border-box;
+                    transition: all 0.4s ease;
+                    border: 1px solid transparent;
+                    --single-address-icon-display: none;
+                }
+
+                single-address[editing], :host([editing]) .empty {
+                    border-color: rgba(360, 360, 360, 0.24);
+                    background-color: var(--app-dark-secondary-color);
+                    color: white;
+                    --single-address-icon-display: block;
+                }
+
+                single-address[editing]:hover {
+                    border-color: rgba(360, 360, 360, 0.87);
+                    cursor: pointer;
+                    
+                }
             </style>
 
-            <app-drawer align="end" .opened="${this.opened}"
+            <app-drawer align="end" disable-swipe .opened="${this.opened}"
                 @opened-changed="${e => this._updateDrawerState(e.target.opened)}">
                     <div class="drawer-list">
                         <div class="image-container">
                             <img src="${this._computeImageSrc(this.user)}">
                         </div>
-                        
-                        <div class="account-details">
-                            <div class="header">${this.editing ? 'Editing account' : 'Account details'}</div>
-                            <mwc-textfield id="userName" labelAlwaysFloat ?readonly="${!this.editing}" label="name" class="details" outlined fullWidth placeholder="${(this.user && this.user.name) ? this.user.name : "add name"}"></mwc-textfield>
-                            <mwc-textfield id="userEmail" labelAlwaysFloat ?readonly="${!this.editing}" label="email" class="details" outlined fullWidth placeholder="${(this.user && this.user.email) ? this.user.email : "add email"}"></mwc-textfield>
-                            <mwc-textfield id="userPhone" labelAlwaysFloat ?readonly="${!this.editing}" label="phone" class="details" outlined fullWidth placeholder="${(this.user && this.user.phone) ? this.user.phone : "add phone"}"></mwc-textfield>
-                        </div>
 
-                        <div class="account-details">
-                            <div class="address-header">Saved addresses<mwc-button ?hidden="${!this.editing}" icon="add" @click="${_ => this._onAddAddress()}" class="add-address" dense outlined>add</mwc-button></div>
-                            <address-input .readonly="${!this.editing}" outlined fullWidth label="add address"></address-input>
-                        </div>
+                        <div class="scrollable">
+                            <div class="account-details">
+                                <div class="header">${this.editing ? 'Editing account' : 'Account details'}</div>
+                                <mwc-textfield id="userName" labelAlwaysFloat ?readonly="${!this.editing}" label="name" class="details" outlined fullWidth placeholder="${(this.user && this.user.name) ? this.user.name : "add name"}"></mwc-textfield>
+                                <mwc-textfield id="userEmail" labelAlwaysFloat ?readonly="${!this.editing}" label="email" class="details" outlined fullWidth placeholder="${(this.user && this.user.email) ? this.user.email : "add email"}"></mwc-textfield>
+                                <mwc-textfield id="userPhone" labelAlwaysFloat ?readonly="${!this.editing}" label="phone" class="details" outlined fullWidth placeholder="${(this.user && this.user.phone) ? this.user.phone : "add phone"}"></mwc-textfield>
+                            </div>
+
+                            <div class="delivery-details">
+                                <div class="address-header">Saved addresses<mwc-button ?hidden="${this.editing}" icon="add" @click="${_ => this._onAddAddress()}" class="add-address" dense outlined>add</mwc-button></div>
+                                ${(this.user && this.user.savedAddresses) ? 
+                                    (repeat(this.user.savedAddresses, (curAddress, index) => 
+                                        html `<single-address @address-click="${_ => this._editSingleAddress(curAddress, index)}" @delete-address="${_ => this._deleteSingleAddress(curAddress, index)}" ?editing="${this.editing}" .address="${curAddress}"></single-address>`)) : ''}
+                                    <div class="empty" ?hidden="${this.user && this.user.savedAddresses && this.user.savedAddresses.length}">no addresses found</div>
+                            </div>
+                        </div>                        
 
                         <mwc-button ?hidden="${!this.editing}" @click="${_ => this._onDiscardChanges()}" class="discard-changes">cancel</mwc-button>
                         <mwc-button ?hidden="${!this.editing}" icon="save" @click="${_ => this._onSaveEdits()}" class="save-edits" unelevated>save changes</mwc-button>
@@ -165,6 +213,19 @@ class AccountDrawer extends FirestoreMixin(DrawerElement) {
             </app-drawer>
 
         `;
+    }
+
+    _onAddAddress() {
+        this.dispatchEvent(new CustomEvent('create-address', {detail: {uid: this.uid}}));
+    }
+
+    _editSingleAddress(address, idx) {
+        console.log('editing single address:', address, idx)
+    }
+
+    _deleteSingleAddress(address, idx) {
+        console.log('deleting single address click:', address, idx)
+        this.dispatchEvent(new CustomEvent('confirm-deletion', {detail: {data: {value: address, index: idx}, type: 'address'}}));
     }
 
     updated(changedProperties) {

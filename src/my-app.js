@@ -29,6 +29,8 @@ import './components/sign-in-drawer/sign-in-drawer';
 import './components/account-drawer/account-drawer';
 import './components/cart-drawer/cart-drawer';
 import './dialogs/create-account-dialog/create-account-dialog';
+import './dialogs/create-address-dialog/create-address-dialog';
+import './dialogs/confirm-deletion-dialog/confirm-deletion-dialog';
 
 class MyApp extends LitElement {
   render() {
@@ -197,13 +199,15 @@ class MyApp extends LitElement {
 
     <sign-in-drawer 
       @opened-changed="${e => this._updateDrawerState(e.detail.opened, signedIn)}"
-      @create-account="${e => this._openCreateAccountDialog()}" 
+      @create-account="${_ => this._openCreateAccountDialog()}" 
       .opened="${_signInDrawerOpened}"
       .persistent="${this._wideLayout}">
     </sign-in-drawer>
 
     <account-drawer 
       @opened-changed="${e => this._updateDrawerState(e.detail.opened, signedIn)}"
+      @create-address="${_ => this._openCreateAddressDialog()}"
+      @confirm-deletion="${e => this._openConfirmDeletionDialog(e.detail)}"
       .opened="${_accountDrawerOpened}"
       .uid="${uid}">
     </account-drawer>
@@ -230,6 +234,8 @@ class MyApp extends LitElement {
     </main>
     
     <create-account-dialog id="createAccountDialog"></create-account-dialog>
+    <create-address-dialog .uid="${uid}" id="createAddressDialog"></create-address-dialog>
+    <confirm-deletion-dialog @deletion-confirmed="${e => this.onDeletionConfirmed(e.detail)}" id="confirmDeletionDialog"></confirm-deletion-dialog>
 
     <mwc-fab data-badge="${cartLength}" ?hidden="${_signInDrawerOpened || _cartDrawerOpened || _page === 'checkout'}" @click="${_ => this._updateCartDrawerState(true, signedIn)}">${cartIcon}</mwc-fab>
 
@@ -434,7 +440,7 @@ class MyApp extends LitElement {
     console.log('checkout click event...');
     window.history.pushState({}, '', '/checkout');
     this._locationChanged();
-    if (!this._wideLayout) this._updateCartDrawerState(false)
+    if (!this._wideLayout) this._cartDrawerOpened = false;
   }
 
   _openCreateAccountDialog() {
@@ -447,6 +453,44 @@ class MyApp extends LitElement {
     // }).catch((err) => {
     //   console.log('err importing create-account-dialog:', err)
     // });
+  }
+
+  _openCreateAddressDialog() {
+    console.log('create address event...');
+    this.shadowRoot.querySelector('#createAddressDialog').show();
+  }
+
+  _openConfirmDeletionDialog(detail) {
+    console.log('confirm deletion event:', detail);
+    var confirmDeletionDialog = this.shadowRoot.querySelector('#confirmDeletionDialog');
+    let type = detail.type;
+
+    switch (type) {
+      case 'address':
+        confirmDeletionDialog.deleteHeader = "delete address";
+        confirmDeletionDialog.type = type;
+        confirmDeletionDialog.dataToDelete = detail.data;
+        confirmDeletionDialog.show();
+        break;
+    }
+  }
+
+  onDeletionConfirmed(detail) {
+    console.log('deletion has been confirmed event:', detail);
+    let type = detail.type;
+
+    switch (type) {
+      case 'address':
+        let address = detail.data.value;
+        const updates = {
+          "savedAddresses": firebase.firestore.FieldValue.arrayRemove(address)
+        }
+        return firebase.firestore().doc(`users/${this.uid}`).update(updates).then(response => {
+          console.log('address has been successfully deleted...')
+        }).catch(err => {
+            console.log('ERR:', err);
+        });
+    }
   }
 
   _onAddToCartEvent(item, qty) {

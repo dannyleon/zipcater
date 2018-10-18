@@ -37,7 +37,7 @@ class AddressInput extends LitElement {
                     z-index: 1;
                     border-radius: 3px;
                     border: 1px solid var(--app-border-color);
-                    width: 264px;
+                    width: calc(100% - 48px);
                     box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
                 }
 
@@ -61,14 +61,6 @@ class AddressInput extends LitElement {
                 }
 
                 mwc-textfield {
-                    --mdc-theme-primary: white;
-                    --mdc-label-color: white;
-                    --mdc-outlined-color: rgba(360, 360, 360, 0.24);
-                    --mdc-outlined-hover-color: rgba(360, 360, 360, 0.87);
-                    --mdc-font-family: 'Open Sans', sans-serif;
-                }
-
-                mwc-textfield[readonly] {
                     --mdc-theme-primary: black;
                     --mdc-label-color: black;
                     --mdc-outlined-color: rgba(0, 0, 0, 0.24);
@@ -94,6 +86,7 @@ class AddressInput extends LitElement {
     constructor() {
         super();
         this.address = "";
+        this.label = "";
     }
 
     _onSinglePredictionClick(prediction) {
@@ -109,6 +102,10 @@ class AddressInput extends LitElement {
     
     firstUpdated() {
         if (!this.geocoder) this.initGeocoder();
+    }
+
+    reset() {
+        this.shadowRoot.getElementById('input').value = null;
     }
 
     initGeocoder() {

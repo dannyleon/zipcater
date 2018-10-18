@@ -66,6 +66,7 @@ class CreateAccountDialog extends LitElement {
                         <div class="right">account</div>
                     </div>
                     <div class="container">
+                        <mwc-textfield fullWidth box id="cna" label="name" type="text"></mwc-textfield>
                         <mwc-textfield fullWidth box id="cem" label="email" type="email"></mwc-textfield>
                         <mwc-textfield fullWidth box id="cpa" label="password" type="password"></mwc-textfield>
                         <mwc-textfield fullWidth box id="ccpa" label="confirm password" type="password"></mwc-textfield>
@@ -89,24 +90,28 @@ class CreateAccountDialog extends LitElement {
     }
 
     _onCloseDialogClick() {
+        this.shadowRoot.querySelector('#cna').value = null;
         this.shadowRoot.querySelector('#cem').value = null;
         this.shadowRoot.querySelector('#cpa').value = null;
         this.shadowRoot.querySelector('#ccpa').value = null;
     }
     
     _onCreateAccountClick() {
+        let cna = this.shadowRoot.querySelector('#cna').value;
         let cem = this.shadowRoot.querySelector('#cem').value;
         let cpa = this.shadowRoot.querySelector('#cpa').value;
         let ccpa = this.shadowRoot.querySelector('#ccpa').value;
         
-        if (!ccpa || !cem || !cpa) return this.showErrorSnackbar('null-inputs');
+        if (!cna || !ccpa || !cem || !cpa) return this.showErrorSnackbar('null-inputs');
         if (cpa !== ccpa) return this.showErrorSnackbar('mismatched-passwords');
 
         firebase.auth().createUserWithEmailAndPassword(cem, cpa).then(response => {
             console.log('account creation success:', response);
             const curUser = response.user;
             const dbUser = {
-                email: curUser.email
+                name: cna,
+                email: curUser.email,
+                image: 'https://firebasestorage.googleapis.com/v0/b/zipcater.appspot.com/o/default-profile-picture.jpg?alt=media&token=e98ce754-9c36-49dd-82c5-ba332b49f4ab'
             }
             return firebase.firestore().doc(`users/${curUser.uid}`).set(dbUser);
         }).then(response => {
