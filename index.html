@@ -95,55 +95,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         min-height: 100vh;
         -webkit-font-smoothing: antialiased;
       }
-      /**
-      * The CSS shown here will not be introduced in the Quickstart guide, but shows
-      * how you can use CSS to style your Element's container.
-      */
-      .StripeElement {
-        background-color: whitesmoke;
-        height: 48px;
-        padding: 14.5px 12px;
-        margin: 8px 0;
-        border-radius: 4px 4px 0 0;
-
-        border-bottom: 1px solid;
-        border-color: rgba(0, 0, 0, .42);
-        box-sizing: border-box;
-      }
-
-      .StripeElement:hover {
-        background-color: rgba(0, 0, 0, 0.08);
-        border-color: rgba(0, 0, 0, .87);
-      }
-
-      .StripeElement--focus {
-        background-color: rgba(0, 0, 0, 0.14) !important;
-        border-bottom: 2px solid;
-        border-color: rgba(0, 0, 0, 1);
-      }
-
-      .StripeElement--invalid {
-        border-color: #9b0000;
-      }
-
-      .StripeElement--webkit-autofill {
-        background-color: #fefde5 !important;
-      }
     </style>
   </head>
   <body>
-    <my-app appTitle="nine2five.catering">
-      <form action="/charge" method="post" id="payment-form">
-        <div class="form-row">
-          <div id="card-element">
-            <!-- A Stripe Element will be inserted here. -->
-          </div>
-      
-          <!-- Used to display Element errors. -->
-          <div id="card-errors" role="alert"></div>
-        </div>
-      </form>
-    </my-app>
+    <my-app appTitle="nine2five.catering"></my-app>
     <noscript>
       Please enable JavaScript to view this website.
     </noscript>
@@ -152,37 +107,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-auth.js"></script>
-    <script src="https://js.stripe.com/v3/"></script>
-    <script>
-      const stripe = Stripe('pk_test_LpKhohdCCJD4Q6ano0LfR4n4');
-      const elements = stripe.elements();
-
-      // Custom styling can be passed to options when creating an Element.
-      const style = {
-        base: {
-          color: '#32325d',
-          fontFamily: '"Open Sans", sans-serif',
-          fontSmoothing: 'antialiased',
-          fontSize: '16px',
-          '::placeholder': {
-            color: 'rgba(0, 0, 0, 0.6)'
-          }
-        },
-        invalid: {
-          color: '#9b0000',
-          iconColor: '#9b0000'
-        }
-      };
-
-      // Create an instance of the card Element.
-      const card = elements.create('card', {style});
-
-      // Add an instance of the card Element into the `card-element` <div>.
-      card.mount('#card-element');
-    </script>
-    <!-- <script src="https://js.braintreegateway.com/js/braintree-2.32.1.min.js"></script> -->
-    
-    <!-- <script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearchLite.min.js"></script> -->
 
     <script>
       // Initialize Firebase

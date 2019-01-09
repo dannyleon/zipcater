@@ -8,6 +8,7 @@ import '../snack-bar';
 import './single-address';
 import { editIcon } from '../../my-icons.js';
 import { repeat } from 'lit-html/directives/repeat';
+import '../../components/agave-textfield.js';
 
 class AccountDrawer extends FirestoreMixin(DrawerElement) {
     static get properties() {
@@ -190,6 +191,7 @@ class AccountDrawer extends FirestoreMixin(DrawerElement) {
                         <div class="scrollable">
                             <div class="account-details">
                                 <div class="header">${this.editing ? 'Editing account' : 'Account details'}</div>
+                                <agave-textfield id="userNameInput" ?readonly="${!this.editing}" label="name" class="details" placeholder="${(this.user && this.user.name) ? this.user.name : "add name"}"></agave-textfield>
                                 <mwc-textfield id="userName" labelAlwaysFloat ?readonly="${!this.editing}" label="name" class="details" outlined fullWidth placeholder="${(this.user && this.user.name) ? this.user.name : "add name"}"></mwc-textfield>
                                 <mwc-textfield id="userEmail" labelAlwaysFloat ?readonly="${!this.editing}" label="email" class="details" outlined fullWidth placeholder="${(this.user && this.user.email) ? this.user.email : "add email"}"></mwc-textfield>
                                 <mwc-textfield id="userPhone" labelAlwaysFloat ?readonly="${!this.editing}" label="phone" class="details" outlined fullWidth placeholder="${(this.user && this.user.phone) ? this.user.phone : "add phone"}"></mwc-textfield>

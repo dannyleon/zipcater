@@ -227,9 +227,7 @@ class MyApp extends LitElement {
       <restaurants-view class="page" ?active="${_page === 'restaurants'}" @restaurant-click="${e => this._onRestaurantClick(e.detail)}"></restaurants-view>
       <menu-view id="menu" class="page" ?active="${_page === 'menu'}" @item-click="${e => this._onItemClick(e.detail.item, e.detail.uid)}"></menu-view>
       <item-view id="item" class="page" ?active="${_page === 'item'}" @add-to-cart="${e => this._onAddToCartEvent(e.detail.item, e.detail.qty)}"></item-view>
-      <checkout-view id="checkout" class="page" ?active="${_page === 'checkout'}" .uid="${uid}">
-        <slot id="payment-form"></slot>
-      </checkout-view>
+      <checkout-view id="checkout" class="page" ?active="${_page === 'checkout'}" .uid="${uid}"></checkout-view>
       <error-view class="page" ?active="${_page === 'error'}"></error-view>
     </main>
     

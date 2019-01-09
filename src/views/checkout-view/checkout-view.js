@@ -197,10 +197,6 @@ class CheckoutView extends FirestoreMixin(PageViewElement) {
                         </select>
                     </div>
                 </div>
-                <div class="header">Payment details</div>
-                <div class="delivery-container">
-                    <slot class="payment-input"></slot>
-                </div>
                 <div class="header">Order summary</div>
                 <div class="delivery-container">
                     ${this.cart ? (repeat(Object.entries(this.cart.items), item => html `
