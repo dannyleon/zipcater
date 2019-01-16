@@ -55,11 +55,7 @@ class SignInDrawer extends DrawerElement {
                     font-weight: 800;
                 }
 
-                mwc-textfield {
-                    --mdc-theme-primary: black;
-                    --mdc-label-color: rgb(0, 0, 0);
-                    --mdc-outlined-color: rgba(0, 0, 0, 0.24);
-                    --mdc-outlined-hover-color: rgba(0, 0, 0, 0.87);
+                agave-textfield {
                     margin: 8px 0;
                 }
 

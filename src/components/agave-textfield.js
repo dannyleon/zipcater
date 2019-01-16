@@ -3,6 +3,7 @@ import {LitElement, html} from 'lit-element';
 class AgaveTextfield extends LitElement {
     static get properties() {
         return {
+            name: String,
             label: String,
             type: String,
             value: String,
@@ -36,7 +37,6 @@ class AgaveTextfield extends LitElement {
                     display: flex;
                     height: 56px;
                     background-color: whitesmoke;
-                    overflow: hidden;
                     border-radius: 4px 4px 0 0;
                 }
 
@@ -50,7 +50,6 @@ class AgaveTextfield extends LitElement {
 
                 :host(:not([readonly])) .input-container:focus-within label {
                     opacity: 0.87;
-                    color: var(--primary-theme, rgb(0, 0, 0));
                 }
 
                 :host(:not([readonly])) .input-container:focus-within .line-ripple {
@@ -87,7 +86,7 @@ class AgaveTextfield extends LitElement {
                     font-family: inherit;
 
                     font-size: 12px;
-                    color: rgb(0, 0, 0);
+                    color: var(--primary-theme, rgb(0, 0, 0));
                     opacity: 0.6;
                 }
 
@@ -102,6 +101,27 @@ class AgaveTextfield extends LitElement {
                     opacity: 0;
                     z-index: 2;
                     background-color: var(--primary-theme, rgb(0,0,0));
+                }
+
+                :host([invalid]) input {
+                    border-color: #d50000;
+                }
+
+                :host([invalid]) label {
+                    color: #d50000;
+                }
+
+                :host([invalid]) .line-ripple {
+                    background-color: #d50000;
+                }
+
+                .error-message {
+                    color: #d50000;
+                    font-size: 12px;
+                    position: absolute;
+                    font-weight: 400;
+                    bottom: -20px;
+                    left: 4px;
                 }
             </style>
 
@@ -125,11 +145,14 @@ class AgaveTextfield extends LitElement {
     }
 
     get value() {
-        return this.shadowRoot.querySelector('input').value;
+        console.log('getting value:', this.shadowRoot.querySelector('input'))
+        let input = this.shadowRoot.querySelector('input');
+        if (input) return input.value;
     }
-
+    
     set value(val) {
-        this.shadowRoot.querySelector('input').value = val;
+        let input = this.shadowRoot.querySelector('input');
+        if (input) input.value = val;
     }
 
     _onInput(e) {

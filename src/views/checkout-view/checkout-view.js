@@ -64,13 +64,8 @@ class CheckoutView extends FirestoreMixin(PageViewElement) {
                 margin-top: 16px;
             }
 
-            mwc-textfield {
-                --mdc-theme-primary: black;
-                --mdc-label-color: black;
-                --mdc-outlined-color: rgba(0, 0, 0, 0.24);
-                --mdc-outlined-hover-color: rgba(0, 0, 0, 0.87);
-                --mdc-font-family: 'Open Sans', sans-serif;
-                margin: 8px 0;
+            agave-textfield {
+                margin: 12px 0;
             }
 
             .delivery-container {

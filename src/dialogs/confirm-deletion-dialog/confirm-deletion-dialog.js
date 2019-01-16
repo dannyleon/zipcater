@@ -46,20 +46,20 @@ class ConfirmDeletionDialog extends LitElement {
                     font-weight: 800;
                 }
 
-                .container {
+                .main {
                     display: flex;
                     flex-direction: column;
                 }
             </style>
 
             <agave-dialog id="dialog">
-                <div class="container">
-                    <div main-title>${this.deleteHeader ? this.deleteHeader : 'Are you sure you want to delete this?'}</div>
+                <div slot="header" class="header" main-title>${this.deleteHeader ? this.deleteHeader : 'Are you sure you want to delete this?'}</div>
+                <div slot="main" class="main">
                     <div class="container">${this.deleteMessage ? this.deleteMessage : 'This action cannot be reverted.'}</div>
-                    <div class="buttons">
-                        <mwc-button @click="${_ => this._onCloseDialogClick()}" class="cancel-button">cancel</mwc-button>
-                        <mwc-button @click="${_ => this._onConfirmDeletionClick()}" class="submit-button" unelevated>delete</mwc-button>
-                    </div>
+                </div>
+                <div slot="buttons" class="buttons">
+                    <mwc-button @click="${_ => this._onCloseDialogClick()}" class="cancel-button">cancel</mwc-button>
+                    <mwc-button @click="${_ => this._onConfirmDeletionClick()}" class="submit-button" unelevated>delete</mwc-button>
                 </div>
             </agave-dialog>
             

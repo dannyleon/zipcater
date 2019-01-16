@@ -36,7 +36,6 @@ class AgaveDialog extends LitElement {
 
                 .dialog {
                     box-sizing: border-box;
-                    padding: 24px;
                     z-index: 2;
                     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
                     width: 600px;
@@ -45,12 +44,32 @@ class AgaveDialog extends LitElement {
                     margin: auto;
 
                     display: flex;
+                    flex-direction: column;
                     
                     position: relative;
                     
                     font-family: "Open Sans", sans-serif;
                     background-color: white;
                     color: black;
+                }
+
+                .dialog ::slotted(div.main) {
+                    margin-top: 20px;
+                    padding: 0 24px 24px;
+                }
+
+                .dialog ::slotted(div.buttons) {
+                    display: flex;
+                    flex-wrap: wrap;
+                    align-items: center;
+                    justify-content: flex-end;
+                    padding: 8px;
+                }
+
+                .dialog ::slotted(div.header) {
+                    display: flex;
+                    align-items: center;
+                    padding: 24px 24px 0;
                 }
 
                 :host([open]) {
@@ -61,7 +80,9 @@ class AgaveDialog extends LitElement {
             </style>
 
             <div class="dialog" role="alertdialog">
-                <slot></slot>
+                <slot name="header"></slot>
+                <slot name="main"></slot>
+                <slot name="buttons"></slot>
             </div>
             
 

@@ -8,6 +8,7 @@ class CreateAccountDialog extends LitElement {
         return {
             _snackbarOpened: Boolean,
             _snackbarMessage: String,
+            waiting: Boolean
         }
     }
 
@@ -46,33 +47,29 @@ class CreateAccountDialog extends LitElement {
                 }
 
                 agave-textfield {
-                    margin: 8px 0;
+                    margin: 12px 0;
                 }
 
-                .container {
+                .main {
                     display: flex;
                     flex-direction: column;
                 }
             </style>
 
             <agave-dialog id="dialog">
-                <div class="main">
-                    <div main-title>
-                        <div class="left">create</div>
-                        <div class="right">account</div>
-                    </div>
-
-                    <div class="container">
-                        <agave-textfield fullWidth box id="cna" label="name" type="text"></agave-textfield>
-                        <agave-textfield fullWidth box id="cem" label="email" type="email"></agave-textfield>
-                        <agave-textfield fullWidth box id="cpa" label="password" type="password"></agave-textfield>
-                        <agave-textfield fullWidth box id="ccpa" label="confirm password" type="password"></agave-textfield>
-                    </div>
-                    <div class="buttons">
-                        <mwc-button @click="${_ => this._onCloseDialogClick()}" class="cancel-button">cancel</mwc-button>
-                        <mwc-button @click="${_ => this._onCreateAccountClick()}" class="submit-button" unelevated>create account</mwc-button>
-                    </div>
-                    <snack-bar class="drawer" ?active="${this._snackbarOpened}">${this._snackbarMessage}</snack-bar>
+                <div class="header" slot="header" main-title>
+                    <div class="left">create</div>
+                    <div class="right">account</div>
+                </div>
+                <div slot="main" class="main">
+                    <agave-textfield errorMessage="Please enter your complete name." name="cna" label="name" type="text"></agave-textfield>
+                    <agave-textfield errorMessage="Please enter your email." name="cem" label="email" type="email"></agave-textfield>
+                    <agave-textfield errorMessage="Please check your password." name="cpa" label="password" type="password"></agave-textfield>
+                    <agave-textfield errorMessage="Please check your password." name="ccpa" label="confirm password" type="password"></agave-textfield>
+                </div>
+                <div slot="buttons" class="buttons">
+                    <mwc-button @click="${this.close}" class="cancel-button">cancel</mwc-button>
+                    <mwc-button @click="${_ => this._onCreateAccountClick()}" class="submit-button" unelevated>${this.waiting ? 'creating...' : 'create account'}</mwc-button>
                 </div>
             </agave-dialog>
             
@@ -84,32 +81,59 @@ class CreateAccountDialog extends LitElement {
     }
 
     close() {
+        this.resetInputs();
         this.shadowRoot.querySelector('#dialog').close();
     }
 
-    _onCloseDialogClick() {
-        this.shadowRoot.querySelector('#cna').value = null;
-        this.shadowRoot.querySelector('#cem').value = null;
-        this.shadowRoot.querySelector('#cpa').value = null;
-        this.shadowRoot.querySelector('#ccpa').value = null;
-
-        this.close();
+    resetInputs() {
+        var inputsArr = this.shadowRoot.querySelectorAll('agave-textfield');
+        inputsArr.forEach(singleInput => {
+            singleInput.value = null;
+            singleInput.invalid = false;
+        });
+        this.waiting = false;
     }
     
     _onCreateAccountClick() {
-        let cna = this.shadowRoot.querySelector('#cna').value;
-        let cem = this.shadowRoot.querySelector('#cem').value;
-        let cpa = this.shadowRoot.querySelector('#cpa').value;
-        let ccpa = this.shadowRoot.querySelector('#ccpa').value;
-        
-        if (!cna || !ccpa || !cem || !cpa) return this.showErrorSnackbar('null-inputs');
-        if (cpa !== ccpa) return this.showErrorSnackbar('mismatched-passwords');
+        if (this.waiting) return;
 
-        firebase.auth().createUserWithEmailAndPassword(cem, cpa).then(response => {
+        this.waiting = true;
+
+        var inputsArr = this.shadowRoot.querySelectorAll('agave-textfield');
+
+        var emptyInputs = false;
+        var payload = {};
+
+        console.log
+
+        inputsArr.forEach(singleInput => {
+            if (!singleInput.value) {
+                singleInput.invalid = true;
+                emptyInputs = true;
+            } else {
+                payload[singleInput.name] = {value: singleInput.value, input: singleInput};
+            }
+        });
+
+        if (emptyInputs) {
+            this.waiting = false;
+            return;
+        }
+
+        console.log('new account sign up:', payload);
+        
+        if (payload.cpa.value !== payload.ccpa.value) {
+            payload.cpa.input.invalid = true;
+            payload.ccpa.input.invalid = true;
+            this.waiting = false;
+            return;
+        }
+
+        firebase.auth().createUserWithEmailAndPassword(payload.cem.value, payload.cpa.value).then(response => {
             console.log('account creation success:', response);
             const curUser = response.user;
             const dbUser = {
-                name: cna,
+                name: payload.cna.value,
                 email: curUser.email,
                 image: 'https://firebasestorage.googleapis.com/v0/b/zipcater.appspot.com/o/default-profile-picture.jpg?alt=media&token=e98ce754-9c36-49dd-82c5-ba332b49f4ab'
             }

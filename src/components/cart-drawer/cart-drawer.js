@@ -87,8 +87,8 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
                 mwc-button {
                     --mdc-theme-primary: var(--app-dark-secondary-color);
                     --mdc-theme-on-primary: white;
-                    --mdc-border-radius: 0;
-                    --mdc-button-height: 48px;
+
+                    margin: 0 24px 8px;
                 }
 
                 single-cart-item {

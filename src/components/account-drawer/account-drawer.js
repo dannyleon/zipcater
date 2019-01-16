@@ -113,7 +113,6 @@ class AccountDrawer extends FirestoreMixin(DrawerElement) {
 
                 agave-textfield.details {
                     margin-top: 8px;
-                    --primary-theme: var(--app-dark-secondary-color);
                 }
 
                 mwc-button {

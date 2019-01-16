@@ -39,24 +39,23 @@ class CreateAddressDialog extends LitElement {
                     font-weight: 700;
                 }
 
-                .container {
+                .main {
                     display: flex;
                     flex-direction: column;
                 }
             </style>
 
             <agave-dialog id="dialog">
-                    <div class="main">
-                        <div main-title>add address</div>
-                        <div class="container">
-                            <address-input fullWidth id="addressInput"></address-input>
-                        </div>
-                        <div class="buttons">
-                            <mwc-button @click="${_ => this._onCloseDialogClick()}" class="cancel-button">cancel</mwc-button>
-                            <mwc-button @click="${_ => this._onAddAddressClick()}" class="submit-button" unelevated>add address</mwc-button>
-                        </div>
-                        <snack-bar class="drawer" ?active="${this._snackbarOpened}">${this._snackbarMessage}</snack-bar>
-                    </div>
+                <div slot="header" class="header" main-title>add address</div>
+                
+                <div slot="main" class="main">
+                    <address-input fullWidth id="addressInput"></address-input>
+                </div>
+                
+                <div slot="buttons" class="buttons">
+                    <mwc-button @click="${_ => this._onCloseDialogClick()}" class="cancel-button">cancel</mwc-button>
+                    <mwc-button @click="${_ => this._onAddAddressClick()}" class="submit-button" unelevated>add address</mwc-button>
+                </div>
             </agave-dialog>
             
         `;
