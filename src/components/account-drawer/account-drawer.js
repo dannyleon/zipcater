@@ -1,14 +1,12 @@
-import {html} from '@polymer/lit-element';
+import {html} from 'lit-element';
 import {DrawerElement} from '../drawer-element'
 import '@polymer/app-layout/app-drawer/app-drawer.js';
 import '@material/mwc-button';
-import '../../components/mwc-textfield/mwc-textfield.js';
+import '../../components/agave-textfield.js';
 import {FirestoreMixin} from '../../mixins/firestore-mixin/firestore-mixin';
 import '../snack-bar';
 import './single-address';
-import { editIcon } from '../../my-icons.js';
 import { repeat } from 'lit-html/directives/repeat';
-import '../../components/agave-textfield.js';
 
 class AccountDrawer extends FirestoreMixin(DrawerElement) {
     static get properties() {
@@ -43,9 +41,10 @@ class AccountDrawer extends FirestoreMixin(DrawerElement) {
                     width: 100%;
                     height: 100%;
                     position: relative;
-                    background: linear-gradient(to right, white 50%, var(--app-dark-secondary-color) 50%);
-                    background-size: 200% 100%;
-                    background-position: left bottom;
+                    /* background: linear-gradient(to right, white 50%, var(--app-dark-secondary-color) 50%); */
+                    /* background-size: 200% 100%; */
+                    /* background-position: left bottom; */
+                    background: white;
                     transition: all 0.4s ease;
                     color: black;
 
@@ -62,17 +61,10 @@ class AccountDrawer extends FirestoreMixin(DrawerElement) {
                     overflow-x: hidden;
                 }
 
-                :host([editing]) .drawer-list {
+                /* :host([editing]) .drawer-list {
                     background-position: right bottom;
                     color: white;
-                }
-
-                :host([editing]) mwc-textfield.details {
-                    --mdc-theme-primary: white;
-                    --mdc-label-color: white;
-                    --mdc-outlined-color: rgba(360, 360, 360, 0.24);
-                    --mdc-outlined-hover-color: rgba(360, 360, 360, 0.87);
-                }
+                } */
 
                 app-drawer {
                     z-index: 1;
@@ -119,18 +111,9 @@ class AccountDrawer extends FirestoreMixin(DrawerElement) {
                     margin: 8px 0;
                 }
 
-                mwc-textfield.details {
-                    margin: 8px 0;
-                    --mdc-theme-primary: black;
-                    --mdc-label-color: black;
-                    --mdc-outlined-color: rgba(0, 0, 0, 0.24);
-                    --mdc-outlined-hover-color: rgba(0, 0, 0, 0.87);
-                    --mdc-font-family: 'Open Sans', sans-serif;
-                }
-
-                :host([editing]) mwc-button {
-                    --mdc-theme-primary: white;
-                    --mdc-theme-on-primary: black;
+                agave-textfield.details {
+                    margin-top: 8px;
+                    --primary-theme: var(--app-dark-secondary-color);
                 }
 
                 mwc-button {
@@ -168,9 +151,7 @@ class AccountDrawer extends FirestoreMixin(DrawerElement) {
                 }
 
                 single-address[editing], :host([editing]) .empty {
-                    border-color: rgba(360, 360, 360, 0.24);
-                    background-color: var(--app-dark-secondary-color);
-                    color: white;
+                    border-color: var(--app-dark-secondary-color);
                     --single-address-icon-display: block;
                 }
 
@@ -191,10 +172,9 @@ class AccountDrawer extends FirestoreMixin(DrawerElement) {
                         <div class="scrollable">
                             <div class="account-details">
                                 <div class="header">${this.editing ? 'Editing account' : 'Account details'}</div>
-                                <agave-textfield id="userNameInput" ?readonly="${!this.editing}" label="name" class="details" placeholder="${(this.user && this.user.name) ? this.user.name : "add name"}"></agave-textfield>
-                                <mwc-textfield id="userName" labelAlwaysFloat ?readonly="${!this.editing}" label="name" class="details" outlined fullWidth placeholder="${(this.user && this.user.name) ? this.user.name : "add name"}"></mwc-textfield>
-                                <mwc-textfield id="userEmail" labelAlwaysFloat ?readonly="${!this.editing}" label="email" class="details" outlined fullWidth placeholder="${(this.user && this.user.email) ? this.user.email : "add email"}"></mwc-textfield>
-                                <mwc-textfield id="userPhone" labelAlwaysFloat ?readonly="${!this.editing}" label="phone" class="details" outlined fullWidth placeholder="${(this.user && this.user.phone) ? this.user.phone : "add phone"}"></mwc-textfield>
+                                <agave-textfield id="userName" ?readonly="${!this.editing}" label="name" class="details" placeholder="${(this.user && this.user.name) ? this.user.name : "add name"}"></agave-textfield>
+                                <agave-textfield type="email" id="userEmail" ?readonly="${!this.editing}" label="email" class="details" placeholder="${(this.user && this.user.email) ? this.user.email : "add email"}"></agave-textfield>
+                                <agave-textfield type="tel" id="userPhone" ?readonly="${!this.editing}" label="phone" class="details" placeholder="${(this.user && this.user.phone) ? this.user.phone : "add phone"}"></agave-textfield>
                             </div>
 
                             <div class="delivery-details">

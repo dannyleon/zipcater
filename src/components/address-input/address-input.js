@@ -1,5 +1,5 @@
-import {LitElement, html} from '@polymer/lit-element';
-import '../mwc-textfield/mwc-textfield.js';
+import {LitElement, html} from 'lit-element';
+import '../agave-textfield.js';
 import {default as loadGoogleMapsApi} from 'load-google-maps-api';
 import { repeat } from 'lit-html/directives/repeat';
 
@@ -69,7 +69,7 @@ class AddressInput extends LitElement {
                 }
             </style>
 
-            <mwc-textfield @input-change="${e => this.geocodeAddress(e.detail)}" type="text" id="input" labelAlwaysFloat label="${this.label}" ?readonly="${this.readonly}" outlined="${this.outlined}" fullWidth="${this.fullWidth}" .value="${this.address}"></mwc-textfield>
+            <agave-textfield @input-change="${e => this.geocodeAddress(e.detail)}" type="text" id="input" labelAlwaysFloat label="${this.label}" ?readonly="${this.readonly}" outlined="${this.outlined}" fullWidth="${this.fullWidth}" .value="${this.address}"></agave-textfield>
             <div ?hidden="${!this.predictions || !this.predictions.length}" class="predictions-container">
                 ${this.predictions ? repeat(this.predictions, (prediction) => html `<div @click="${ _ => this._onSinglePredictionClick(prediction)}">${prediction.description}</div>`) : ''}
             </div>

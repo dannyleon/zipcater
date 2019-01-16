@@ -1,9 +1,8 @@
-import {html} from '@polymer/lit-element';
+import {html} from 'lit-element';
 import {DrawerElement} from '../drawer-element'
 import {FirestoreMixin} from '../../mixins/firestore-mixin/firestore-mixin';
 import '@polymer/app-layout/app-drawer/app-drawer.js';
 import '@material/mwc-button';
-import '@material/mwc-icon';
 import '../snack-bar';
 import './single-cart-item';
 import { cartIcon } from '../../my-icons';
@@ -71,9 +70,10 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
                     align-items: center;
                 }                
 
-                [main-title] mwc-icon {
+                [main-title] i {
                     fill: var(--app-dark-secondary-color);
                     margin-right: 4px;
+                    display: flex;
                 }
 
                 [main-title] .left {
@@ -119,7 +119,7 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
                 @opened-changed="${e => this._updateDrawerState(e.target.opened)}">
                     <div class="drawer-list">
                         <div main-title>
-                            <mwc-icon>${cartIcon}</mwc-icon>
+                            <i>${cartIcon}</i>
                             <span class="left">shopping</span>
                             <span class="right">cart</span>
                         </div>

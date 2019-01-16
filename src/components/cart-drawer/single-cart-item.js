@@ -1,5 +1,4 @@
-import {LitElement, html} from '@polymer/lit-element';
-import '@material/mwc-icon'
+import {LitElement, html} from 'lit-element';
 import { minusIcon } from '../../my-icons';
 
 class SingleCartItem extends LitElement {
@@ -37,15 +36,16 @@ class SingleCartItem extends LitElement {
                     text-align: start;
                 }
 
-                mwc-icon {
+                i {
                     margin-left: 16px;
+                    display: flex;
                 }
 
-                mwc-icon:hover svg {
+                i:hover svg {
                     fill: var(--app-secondary-color);
                 }
 
-                :host([noRemoveIcon]) mwc-icon {
+                :host([noRemoveIcon]) i {
                     display: none;
                 }
             </style>
@@ -53,7 +53,7 @@ class SingleCartItem extends LitElement {
             <div>${this.item.quantity} x</div>
             <div class="name">${this.item.name}</div>
             <div class="price">$${(this.item.options[this.item.defaultOption]).toFixed(2)}</div>
-            <mwc-icon @click="${_ => this._onRemoveItemClick()}">${minusIcon}</mwc-icon>
+            <i @click="${_ => this._onRemoveItemClick()}">${minusIcon}</i>
         `;
     }
 

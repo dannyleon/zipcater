@@ -1,7 +1,7 @@
-import {LitElement, html} from '@polymer/lit-element';
-import '../../components/mwc-dialog/mwc-dialog';
+import {LitElement, html} from 'lit-element';
+import '../../components/agave-dialog.js';
 import '../../components/snack-bar';
-import '../../components/mwc-textfield/mwc-textfield';
+import '../../components/agave-textfield.js';
 
 class CreateAccountDialog extends LitElement {
     static get properties() {
@@ -45,11 +45,7 @@ class CreateAccountDialog extends LitElement {
                     font-weight: 800;
                 }
 
-                mwc-textfield {
-                    --mdc-theme-primary: black;
-                    --mdc-label-color: black;
-                    --mdc-outlined-color: rgba(0, 0, 0, 0.24);
-                    --mdc-outlined-hover-color: rgba(0, 0, 0, 0.87);
+                agave-textfield {
                     margin: 8px 0;
                 }
 
@@ -59,24 +55,26 @@ class CreateAccountDialog extends LitElement {
                 }
             </style>
 
-            <mwc-dialog id="dialog"
-                @closed="${e => this._onDialogClosed(e)}">
-                    <div slot="header" main-title>
+            <agave-dialog id="dialog">
+                <div class="main">
+                    <div main-title>
                         <div class="left">create</div>
                         <div class="right">account</div>
                     </div>
+
                     <div class="container">
-                        <mwc-textfield fullWidth box id="cna" label="name" type="text"></mwc-textfield>
-                        <mwc-textfield fullWidth box id="cem" label="email" type="email"></mwc-textfield>
-                        <mwc-textfield fullWidth box id="cpa" label="password" type="password"></mwc-textfield>
-                        <mwc-textfield fullWidth box id="ccpa" label="confirm password" type="password"></mwc-textfield>
+                        <agave-textfield fullWidth box id="cna" label="name" type="text"></agave-textfield>
+                        <agave-textfield fullWidth box id="cem" label="email" type="email"></agave-textfield>
+                        <agave-textfield fullWidth box id="cpa" label="password" type="password"></agave-textfield>
+                        <agave-textfield fullWidth box id="ccpa" label="confirm password" type="password"></agave-textfield>
                     </div>
-                    <div class="buttons" slot="footer">
-                        <mwc-button @click="${_ => this._onCloseDialogClick()}" class="cancel-button" data-mdc-dialog-action="close">cancel</mwc-button>
+                    <div class="buttons">
+                        <mwc-button @click="${_ => this._onCloseDialogClick()}" class="cancel-button">cancel</mwc-button>
                         <mwc-button @click="${_ => this._onCreateAccountClick()}" class="submit-button" unelevated>create account</mwc-button>
                     </div>
                     <snack-bar class="drawer" ?active="${this._snackbarOpened}">${this._snackbarMessage}</snack-bar>
-            </mwc-dialog>
+                </div>
+            </agave-dialog>
             
         `;
     }
@@ -94,6 +92,8 @@ class CreateAccountDialog extends LitElement {
         this.shadowRoot.querySelector('#cem').value = null;
         this.shadowRoot.querySelector('#cpa').value = null;
         this.shadowRoot.querySelector('#ccpa').value = null;
+
+        this.close();
     }
     
     _onCreateAccountClick() {
@@ -150,11 +150,6 @@ class CreateAccountDialog extends LitElement {
         this._snackbarOpened = true;
         this.__snackbarTimer = setTimeout(() => { this._snackbarOpened = false }, 3000);
     }
-
-    _onDialogClosed(e) {
-        console.log('on dialog closed:', e)
-    }
-
 }
 
 customElements.define('create-account-dialog', CreateAccountDialog);

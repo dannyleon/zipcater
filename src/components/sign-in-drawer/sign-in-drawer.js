@@ -1,8 +1,8 @@
-import {html} from '@polymer/lit-element';
+import {html} from 'lit-element';
 import {DrawerElement} from '../drawer-element'
 import '@polymer/app-layout/app-drawer/app-drawer.js';
 import '@material/mwc-button';
-import '../../components/mwc-textfield/mwc-textfield';
+import '../../components/agave-textfield.js';
 import '../snack-bar';
 
 class SignInDrawer extends DrawerElement {
@@ -81,8 +81,8 @@ class SignInDrawer extends DrawerElement {
                         <div main-title>
                             <span class="left">sign</span><span class="right">in</span>
                         </div>
-                        <mwc-textfield id="em" outlined fullWidth label="email"></mwc-textfield>
-                        <mwc-textfield id="pa" outlined fullWidth label="password" type="password"></mwc-textfield>
+                        <agave-textfield id="em" outlined fullWidth label="email"></agave-textfield>
+                        <agave-textfield id="pa" outlined fullWidth label="password" type="password"></agave-textfield>
                         <mwc-button @click="${_ => this._onSignInClick()}" class="sign-in" outlined>sign in</mwc-button>
                         <mwc-button @click="${_ => this._onCreateAccountClick()}" class="create" unelevated>create account</mwc-button>
                         <snack-bar class="drawer" ?active="${this._snackbarOpened}">${this._snackbarMessage}</snack-bar>

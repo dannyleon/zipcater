@@ -1,4 +1,4 @@
-import {LitElement, html} from '@polymer/lit-element';
+import {LitElement, html} from 'lit-element';
 import '@material/mwc-button'
 
 class MwcTab extends LitElement {

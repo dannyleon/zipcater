@@ -1,11 +1,9 @@
-import {html} from '@polymer/lit-element';
+import {html} from 'lit-element';
 import {PageViewElement} from '../page-view-element';
 import {FirestoreMixin} from '../../mixins/firestore-mixin/firestore-mixin';
 import {SharedStyles} from '../../styles/shared-styles';
 import '@material/mwc-button';
-import '../../components/mwc-textfield/mwc-textfield';
-import '@material/mwc-icon';
-import '@material/mwc-button';
+import '../../components/agave-textfield.js';
 import { arrowBackIcon } from '../../my-icons';
 import '../../components/cart-drawer/single-cart-item.js'
 import { repeat } from 'lit-html/directives/repeat';
@@ -41,6 +39,10 @@ class CheckoutView extends FirestoreMixin(PageViewElement) {
                 font-size: 32px;
                 display: flex;
                 align-items: center;
+            }
+
+            .main-title i {
+                display: flex;
             }
 
             .arrow-back:hover svg {
@@ -164,15 +166,15 @@ class CheckoutView extends FirestoreMixin(PageViewElement) {
 
             </style>
             
-            <div class="main-title"><mwc-icon @click="${_ => this._onArrowBackClick()}" class="arrow-back">${arrowBackIcon}</mwc-icon>Checkout</div>
+            <div class="main-title"><i @click="${_ => this._onArrowBackClick()}" class="arrow-back">${arrowBackIcon}</i>Checkout</div>
             <div class="container">
                 <div class="header">Delivery address</div>
                 <div class="delivery-container">
-                    <mwc-textfield box fullWidth label="address"></mwc-textfield>
-                    <mwc-textfield box fullWidth label="apt number or suite"></mwc-textfield>
-                    <mwc-textfield box fullWidth label="name"></mwc-textfield>
-                    <mwc-textfield box fullWidth label="phone number"></mwc-textfield>
-                    <mwc-textfield textarea box fullWidth label="special instructions" labelAlwaysFloat></mwc-textfield>
+                    <agave-textfield box fullWidth label="address"></agave-textfield>
+                    <agave-textfield box fullWidth label="apt number or suite"></agave-textfield>
+                    <agave-textfield box fullWidth label="name"></agave-textfield>
+                    <agave-textfield box fullWidth label="phone number"></agave-textfield>
+                    <agave-textfield textarea box fullWidth label="special instructions" labelAlwaysFloat></agave-textfield>
                 </div>
                 <div class="header">Scheduled day and time</div>
                 <div class="delivery-container">

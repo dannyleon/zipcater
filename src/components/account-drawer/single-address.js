@@ -1,6 +1,5 @@
-import {LitElement, html} from '@polymer/lit-element';
-import '@material/mwc-icon'
-import { minusIcon } from '../../my-icons';
+import {LitElement, html} from 'lit-element';
+import { minusFilledIcon } from '../../my-icons';
 
 class SingleAddress extends LitElement {
     static get properties() {
@@ -17,22 +16,17 @@ class SingleAddress extends LitElement {
     render() {
         return html`
             <style>
-                mwc-icon {
+                i {
                     position: absolute;
                     top: -8px;
                     right: -8px;
-                    fill: white;
+                    fill: var(--icon-color, black);
                     display: var(--single-address-icon-display, block);
-                }
-
-                mwc-icon:hover {
-                    fill: var(--app-fill-color);
                     cursor: pointer;
                 }
-
             </style>
             
-            <mwc-icon @click="${_ => this._onDeleteIconClick()}">${minusIcon}</mwc-icon>
+            <i @click="${_ => this._onDeleteIconClick()}">${minusFilledIcon}</i>
             <div @click="${_ => this._onAddressClick()}">${this.address}</div>
         `;
     }

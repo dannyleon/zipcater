@@ -1,4 +1,4 @@
-import {LitElement, html} from '@polymer/lit-element';
+import {LitElement, html} from 'lit-element';
 
 class AgaveTextfield extends LitElement {
     static get properties() {
@@ -28,62 +28,89 @@ class AgaveTextfield extends LitElement {
         return html`
             <style>
                 :host {
+                    font-family: 'Open Sans', sans-serif;
+                }
+
+                .input-container {
                     position: relative;
-                    padding-bottom: 16px;
                     display: flex;
-                    flex-direction: column;
+                    height: 56px;
+                    background-color: whitesmoke;
+                    overflow: hidden;
+                    border-radius: 4px 4px 0 0;
+                }
+
+                :host(:not([readonly])) .input-container:hover {
+                    background-color: #ededed;
+                }
+
+                :host(:not([readonly])) .input-container:focus-within {
+                    background-color: #dddddd;
+                }
+
+                :host(:not([readonly])) .input-container:focus-within label {
+                    opacity: 0.87;
+                    color: var(--primary-theme, rgb(0, 0, 0));
+                }
+
+                :host(:not([readonly])) .input-container:focus-within .line-ripple {
+                    transform: scaleX(1);
+                    opacity: 1;
                 }
 
                 input {
-                    display: block;
-                    font-size: 16px;
-                    padding: 0 8px;
-                    box-sizing: border-box;
-                    height: 56px;
                     border: none;
-                    border-radius: 4px 4px 0 0;
-                    overflow: hidden;
-                    color: var(--agave-theme-color, #FBFBFB);
-                    background-color: var(--agave-theme-background-color);
-                    border-bottom: 1px solid var(--agave-theme-accent-color, rgba(0, 0, 0, 0.24));
-                }
+                    width: 100%;
+                    background-color: transparent;
+                    padding: 20px 12px 6px;
+                    font-family: inherit;
 
-                input:hover {
-                    border-color: rgba(0, 0, 0, 0.87)
+                    box-sizing: border-box;
+                    border-bottom: 1px solid;
+                    border-bottom-color: #9d9d9d;
+
+                    font-size: 1rem;
+                    line-height: 1.75rem;
+                    font-weight: 400;
+                    letter-spacing: 0.009375em;
                 }
 
                 input:focus {
                     outline: none;
-                    background-color: var(--agave-theme-focus-background-color);
-                    border-bottom: 2px solid var(--agave-theme-focus-border-color, rgba(0, 0, 0, 1));
                 }
 
                 label {
-                    font-size: 12px;
-                    color: var(--agave-theme-label-color, #FAFAFA)
-                }
-
-                :host([invalid]) input {
-                    border-color: #ffd600;
-                }
-
-                :host([invalid]) label {
-                    color: #ffd600;
-                }
-
-                .error-message {
-                    color: #ffd600;
-                    font-size: 14px;
                     position: absolute;
-                    font-weight: 600;
-                    bottom: -8px;
-                    left: 4px;
+                    left: 12px;
+                    top: 6px;
+
+                    font-family: inherit;
+
+                    font-size: 12px;
+                    color: rgb(0, 0, 0);
+                    opacity: 0.6;
+                }
+
+                .line-ripple {
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 2px;
+                    transform: scaleX(0);
+                    transition: transform 180ms cubic-bezier(0.4, 0, 0.2, 1), opacity 180ms cubic-bezier(0.4, 0, 0.2, 1);
+                    opacity: 0;
+                    z-index: 2;
+                    background-color: var(--primary-theme, rgb(0,0,0));
                 }
             </style>
-            
-            <label ?hidden="${!this.label}" for="input">${this.label}</label>
-            <input placeholder="${this.placeholder}" ?readonly="${this.readonly}" @input="${this._onInput}" ?invalid="${this.invalid}" id="input" type="${this.type}">
-            <div class="error-message" ?hidden="${!this.invalid || !this.errorMessage}">${this.errorMessage}</div>
+
+            <div class="input-container">
+                <label ?hidden="${!this.label}" for="input">${this.label}</label>
+                <input placeholder="${this.placeholder}" ?readonly="${this.readonly}" @input="${this._onInput}" ?invalid="${this.invalid}" id="input" type="${this.type}">
+                <div class="line-ripple"></div>
+                <div class="error-message" ?hidden="${!this.invalid || !this.errorMessage}">${this.errorMessage}</div> 
+            </div>
         `;
     }
 
@@ -106,6 +133,7 @@ class AgaveTextfield extends LitElement {
     }
 
     _onInput(e) {
+        console.log('input focused/blur')
         if (e.target.value && this.invalid) this.invalid = false;
     }
 }

@@ -1,5 +1,5 @@
-import {LitElement, html} from '@polymer/lit-element';
-import '../../components/mwc-dialog/mwc-dialog';
+import {LitElement, html} from 'lit-element';
+import '../../components/agave-dialog.js';
 
 class ConfirmDeletionDialog extends LitElement {
     static get properties() {
@@ -46,28 +46,22 @@ class ConfirmDeletionDialog extends LitElement {
                     font-weight: 800;
                 }
 
-                mwc-textfield {
-                    --mdc-theme-primary: black;
-                    --mdc-label-color: black;
-                    --mdc-outlined-color: rgba(0, 0, 0, 0.24);
-                    --mdc-outlined-hover-color: rgba(0, 0, 0, 0.87);
-                    margin: 8px 0;
-                }
-
                 .container {
                     display: flex;
                     flex-direction: column;
                 }
             </style>
 
-            <mwc-dialog id="dialog">
-                    <div slot="header" main-title>${this.deleteHeader ? this.deleteHeader : 'Are you sure you want to delete this?'}</div>
+            <agave-dialog id="dialog">
+                <div class="container">
+                    <div main-title>${this.deleteHeader ? this.deleteHeader : 'Are you sure you want to delete this?'}</div>
                     <div class="container">${this.deleteMessage ? this.deleteMessage : 'This action cannot be reverted.'}</div>
-                    <div class="buttons" slot="footer">
-                        <mwc-button @click="${_ => this._onCloseDialogClick()}" class="cancel-button" data-mdc-dialog-action="close">cancel</mwc-button>
+                    <div class="buttons">
+                        <mwc-button @click="${_ => this._onCloseDialogClick()}" class="cancel-button">cancel</mwc-button>
                         <mwc-button @click="${_ => this._onConfirmDeletionClick()}" class="submit-button" unelevated>delete</mwc-button>
                     </div>
-            </mwc-dialog>
+                </div>
+            </agave-dialog>
             
         `;
     }
@@ -83,7 +77,7 @@ class ConfirmDeletionDialog extends LitElement {
 
     _onCloseDialogClick() {
         console.log('closing confirm deletion dialog...')
-        this.resetValues();
+        this.close();
     }
 
     resetValues() {

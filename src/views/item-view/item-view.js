@@ -1,4 +1,4 @@
-import {html} from '@polymer/lit-element';
+import {html} from 'lit-element';
 import {PageViewElement} from '../page-view-element';
 import {FirestoreMixin} from '../../mixins/firestore-mixin/firestore-mixin';
 import {SharedStyles} from '../../styles/shared-styles';
