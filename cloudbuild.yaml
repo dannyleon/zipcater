@@ -1,11 +1,7 @@
 steps:
 - id: 'Install node modules'
   name: 'gcr.io/cloud-builders/npm'
-  args: ['install', '--no-optional']
-
-- id: 'Install dev dependencies'
-  name: 'gcr.io/cloud-builders/npm'
-  args: ['install', '--only=dev']
+  args: ['install']
 
 - id: 'Polymer build'
   name: 'gcr.io/$PROJECT_ID/polymer'
