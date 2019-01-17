@@ -34,7 +34,7 @@ import './dialogs/confirm-deletion-dialog/confirm-deletion-dialog';
 
 class MyApp extends LitElement {
   render() {
-    const {_page, _snackbarOpened, _snackbarMessage, _offline, _signInDrawerOpened, _accountDrawerOpened, _cartDrawerOpened, signedIn, uid, cartLength} = this;
+    const {_page, _snackbarOpened, _snackbarMessage, _offline, _signInDrawerOpened, _accountDrawerOpened, _cartDrawerOpened, signedIn, uid, cartLength, _wideLayout} = this;
     // Anything that's related to rendering should be done in here.
     return html`
     ${ButtonSharedStyles}
@@ -54,6 +54,10 @@ class MyApp extends LitElement {
         --app-light-text-color: #ffffff;
         --app-dark-text-color: #000000;
         --app-fill-color: #EEEEEE;
+
+        --app-subtitle-text-color: rgba(0,0,0,0.6);
+        --app-border-color: rgba(219,219,219,1);
+        --app-card-shadow: 0 1px 1px 0 rgba(0,0,0,0.14), 0 2px 1px -1px rgba(0,0,0,0.12), 0 1px 3px 0 rgba(0,0,0,0.2);
 
         --app-section-even-color: #f7f7f7;
         --app-section-odd-color: white;
@@ -132,13 +136,16 @@ class MyApp extends LitElement {
         text-align: center;
       }
 
-      .profile-icon svg {
-        height: 32px;
-        width: 32px;
+      .profile-icon {
+        --mdc-theme-primary: black;
+      }
+
+      .profile-icon[hidden] {
+        display: none;
       }
 
       mwc-fab {
-        --mdc-theme-secondary: var(--app-secondary-color);
+        --mdc-theme-secondary: var(--app-dark-secondary-color);
         position: fixed;
         bottom: 16px;
         right: 16px;
@@ -147,8 +154,8 @@ class MyApp extends LitElement {
       mwc-fab[data-badge]:after {
         content: attr(data-badge);
         position: absolute;
-        top: 6px;
-        right: 6px;
+        top: 4px;
+        left: 28px;
         font-size:.7em;
         background:black;
         color: white;
@@ -166,7 +173,7 @@ class MyApp extends LitElement {
 
            /* Wide layout */
      @media (min-width: 768px) {
-        .main-content {
+        :host(:not([_page="checkout"])) .main-content {
           margin-right: var(--app-drawer-width);
           border-right: 1px solid var(--app-border-color);
         }
@@ -190,10 +197,12 @@ class MyApp extends LitElement {
       <app-toolbar class="toolbar-top">
         <div class="main-title">
           <button @click="${_ => this._homeButtonClick()}">
-            <span class="left">nine2five</span><span class="right">catering</span>
+            <div>
+              <div class="left">maro</div><div class="right">auto parts</div>
+            </div>
           </button>
         </div>
-        <button @click="${_ => this._updateDrawerState(true, signedIn)}" class="profile-icon">${profileIcon}</button>
+        <mwc-button ?hidden="${_wideLayout && !signedIn}" icon="account_box" @click="${_ => this._updateDrawerState(true, signedIn)}" class="profile-icon" dense outlined>${signedIn ? 'account' : 'sign in'}</mwc-button>
       </app-toolbar>
     </app-header>
 
@@ -213,8 +222,6 @@ class MyApp extends LitElement {
     </account-drawer>
 
     <cart-drawer 
-      @opened-changed="${e => this._updateCartDrawerState(e.detail.opened, signedIn)}"
-      .opened="${_cartDrawerOpened}"
       .uid="${uid}"
       @delete-cart-item="${e => this._onDeleteCartItemEvent(e.detail)}"
       @checkout="${e => this._onCheckoutEvent()}"
@@ -227,7 +234,7 @@ class MyApp extends LitElement {
       <restaurants-view class="page" ?active="${_page === 'restaurants'}" @restaurant-click="${e => this._onRestaurantClick(e.detail)}"></restaurants-view>
       <menu-view id="menu" class="page" ?active="${_page === 'menu'}" @item-click="${e => this._onItemClick(e.detail.item, e.detail.uid)}"></menu-view>
       <item-view id="item" class="page" ?active="${_page === 'item'}" @add-to-cart="${e => this._onAddToCartEvent(e.detail.item, e.detail.qty)}"></item-view>
-      <checkout-view id="checkout" class="page" ?active="${_page === 'checkout'}" .uid="${uid}"></checkout-view>
+      <checkout-view @create-address="${_ => this._openCreateAddressDialog()}" @confirm-deletion="${e => this._openConfirmDeletionDialog(e.detail)}" id="checkout" class="page" ?active="${_page === 'checkout'}" .uid="${uid}"></checkout-view>
       <error-view class="page" ?active="${_page === 'error'}"></error-view>
     </main>
     
@@ -235,7 +242,7 @@ class MyApp extends LitElement {
     <create-address-dialog .uid="${uid}" id="createAddressDialog"></create-address-dialog>
     <confirm-deletion-dialog @deletion-confirmed="${e => this.onDeletionConfirmed(e.detail)}" id="confirmDeletionDialog"></confirm-deletion-dialog>
 
-    <mwc-fab data-badge="${cartLength}" ?hidden="${_signInDrawerOpened || _cartDrawerOpened || _page === 'checkout'}" @click="${_ => this._updateCartDrawerState(true, signedIn)}">${cartIcon}</mwc-fab>
+    <mwc-fab extended label="cart" data-badge="${cartLength}" ?hidden="${ _wideLayout || _page === 'checkout'}" @click="${_ => this._fabClick(signedIn)}" icon="shopping_cart"></mwc-fab>
 
     <snack-bar ?active="${_snackbarOpened}">${_snackbarMessage}</snack-bar>
     `;
@@ -245,7 +252,7 @@ class MyApp extends LitElement {
     return {
       appTitle: { type: String },
       cartLength: {type: Number},
-      _page: { type: String },
+      _page: { type: String, reflect: true },
       _snackbarOpened: { type: Boolean },
       _snackbarMessage: { type: String },
       _offline: { type: Boolean },
@@ -286,6 +293,8 @@ class MyApp extends LitElement {
           this._cartDrawerOpened = false;
           this._signInDrawerOpened = true;
         }
+
+        if (this._page && this._page === 'checkout') this._homeButtonClick();
       }
     });
   }
@@ -309,11 +318,11 @@ class MyApp extends LitElement {
   }
 
   _layoutChanged(isWideLayout) {
+    console.log('layout changed:', isWideLayout)
     this._wideLayout = isWideLayout;
-    // The drawer doesn't make sense in a wide layout, so if it's opened, close it.
-    if (this.signedIn) {
+    if (this.signedIn && this._page !== 'checkout') {
       this._updateCartDrawerState(isWideLayout, this.signedIn);
-    } else {
+    } else if (!this.signedIn) {
       this._updateDrawerState(isWideLayout, this.signedIn);
     }
   }
@@ -328,6 +337,14 @@ class MyApp extends LitElement {
     }
 
     this.showSnackbar(`You are now ${this._offline ? 'offline' : 'online'}.`);
+  }
+
+  _fabClick(signedIn) {
+    if (!signedIn) {
+      this.showSnackbar('Please create an account or sign in before opening cart.');
+      return;
+    }
+    this._updateCartDrawerState(true, signedIn)
   }
 
   showSnackbar(msg) {
@@ -378,7 +395,6 @@ class MyApp extends LitElement {
   _updateCartDrawerState(opened, signedIn) {
     console.log('updating cart drawer state:', opened, signedIn)
     console.log('is wide layout:', this._wideLayout)
-    if (this._wideLayout && !opened) return;
     if (!signedIn) return;
     if (opened !== this._cartDrawerOpened) {
       this._cartDrawerOpened = opened;
@@ -414,6 +430,12 @@ class MyApp extends LitElement {
         import('./views/error-view/error-view.js');
     }
     this._page = page;
+
+    if (this._wideLayout && page !== 'checkout') {
+      this._updateCartDrawerState(true, this.signedIn)
+    } else {
+      this._updateCartDrawerState(false, this.signedIn);
+    }
   }
 
   _onRestaurantClick(restaurant) {
@@ -438,7 +460,6 @@ class MyApp extends LitElement {
     console.log('checkout click event...');
     window.history.pushState({}, '', '/checkout');
     this._locationChanged();
-    if (!this._wideLayout) this._cartDrawerOpened = false;
   }
 
   _openCreateAccountDialog() {
@@ -517,6 +538,16 @@ class MyApp extends LitElement {
   _onCartLengthEvent(updatedCartLength) {
     if (!updatedCartLength) return this.cartLength = 0;
     this.cartLength = updatedCartLength;
+  }
+
+  get _cartDrawerOpened() {
+    let cartDrawer = this.shadowRoot.querySelector('cart-drawer');
+    if (cartDrawer) return cartDrawer.opened;
+  }
+
+  set _cartDrawerOpened(val) {
+    let cartDrawer = this.shadowRoot.querySelector('cart-drawer');
+    if (cartDrawer) cartDrawer.opened = val;
   }
 }
 

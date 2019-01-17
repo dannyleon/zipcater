@@ -156,7 +156,7 @@ class AgaveTextfield extends LitElement {
     }
 
     _onInput(e) {
-        console.log('input focused/blur')
+        this.dispatchEvent(new CustomEvent('input-change', {detail: e.target.value}));
         if (e.target.value && this.invalid) this.invalid = false;
     }
 }

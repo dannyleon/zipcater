@@ -4,6 +4,7 @@ import {FirestoreMixin} from '../../mixins/firestore-mixin/firestore-mixin';
 import {SharedStyles} from '../../styles/shared-styles';
 import '@material/mwc-button';
 import '../../components/agave-textfield.js';
+import '../../components/address-picker.js';
 import { arrowBackIcon } from '../../my-icons';
 import '../../components/cart-drawer/single-cart-item.js'
 import { repeat } from 'lit-html/directives/repeat';
@@ -15,6 +16,11 @@ class CheckoutView extends FirestoreMixin(PageViewElement) {
             cart: {
                 type: Object,
                 doc: 'carts/{uid}',
+                live: true
+            },
+            user: {
+                type: Object,
+                doc: 'users/{uid}',
                 live: true
             },
             subtotal: Number,
@@ -51,6 +57,7 @@ class CheckoutView extends FirestoreMixin(PageViewElement) {
 
             .arrow-back {
                 margin-right: 8px;
+                cursor: pointer;
             }
 
             .arrow-back svg {
@@ -136,6 +143,10 @@ class CheckoutView extends FirestoreMixin(PageViewElement) {
                 align-self: flex-end;
             }
 
+            address-picker {
+                margin: 12px 24px 0;
+            }
+
             @media (max-width: 768px) {
                 .summary {
                     width: 50%;
@@ -163,37 +174,8 @@ class CheckoutView extends FirestoreMixin(PageViewElement) {
             
             <div class="main-title"><i @click="${_ => this._onArrowBackClick()}" class="arrow-back">${arrowBackIcon}</i>Checkout</div>
             <div class="container">
-                <div class="header">Delivery address</div>
-                <div class="delivery-container">
-                    <agave-textfield box fullWidth label="address"></agave-textfield>
-                    <agave-textfield box fullWidth label="apt number or suite"></agave-textfield>
-                    <agave-textfield box fullWidth label="name"></agave-textfield>
-                    <agave-textfield box fullWidth label="phone number"></agave-textfield>
-                    <agave-textfield textarea box fullWidth label="special instructions" labelAlwaysFloat></agave-textfield>
-                </div>
-                <div class="header">Scheduled day and time</div>
-                <div class="delivery-container">
-                    <div class="select-container">
-                        <select>
-                            <option value="today">today</option>
-                            <option value="tomorrow">tomorrow</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                        </select>
-                    </div>
-                    <div class="select-container">
-                        <select>
-                            <option value="1">10:30am - 11:00am</option>
-                            <option value="2">11:00am - 11:30am</option>
-                            <option value="3">11:30am - 12:00pm</option>
-                            <option value="4">12:00pm - 12:30pm</option>
-                            <option value="4">12:30pm - 1:00pm</option>
-                        </select>
-                    </div>
-                </div>
+                <div class="header">Shipping details</div>
+                <address-picker uid="${this.uid}" .selectedAddress="${this.user && this.user.selectedAddress}" .addressArray="${this.user ? this.user.savedAddresses : []}"></address-picker>
                 <div class="header">Order summary</div>
                 <div class="delivery-container">
                     ${this.cart ? (repeat(Object.entries(this.cart.items), item => html `
@@ -215,6 +197,7 @@ class CheckoutView extends FirestoreMixin(PageViewElement) {
         console.log('changed properties:', changedProperties)
         const uidUpdated = changedProperties.has('uid');
         const cartUpdated = changedProperties.has('cart');
+        const userUpdated = changedProperties.has('user');
         const activeUpdated = changedProperties.has('active');
        
         if ((uidUpdated && this.argsArray) || (this.uid && !this.cart && this.argsArray)) {

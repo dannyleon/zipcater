@@ -5,7 +5,7 @@ import '@material/mwc-button';
 import '../../components/agave-textfield.js';
 import {FirestoreMixin} from '../../mixins/firestore-mixin/firestore-mixin';
 import '../snack-bar';
-import './single-address';
+import '../single-address';
 import { repeat } from 'lit-html/directives/repeat';
 
 class AccountDrawer extends FirestoreMixin(DrawerElement) {
@@ -21,10 +21,10 @@ class AccountDrawer extends FirestoreMixin(DrawerElement) {
                 doc: 'users/{uid}',
                 live: true
             },
-            placeholderName: String,
-            placeholderEmail: String,
-            placeholderPhone: String,
-            argsArray: Array
+            selectedAddress: Number,
+            placeholderSelectedAddress: Number,
+            argsArray: Array,
+            waiting: Boolean
         }
     }
 
@@ -102,6 +102,10 @@ class AccountDrawer extends FirestoreMixin(DrawerElement) {
                     justify-content: space-between;
                 }
 
+                :host([editing]) .header, :host([editing]) .address-header {
+                    color: var(--app-dark-secondary-color);
+                }
+
                 .address-header {
                     margin-bottom: 8px;
                     height: 32px;
@@ -117,8 +121,6 @@ class AccountDrawer extends FirestoreMixin(DrawerElement) {
 
                 mwc-button {
                     --mdc-theme-primary: var(--app-dark-secondary-color);
-                    --mdc-border-radius: 0;
-                    --mdc-button-height: 48px;
                 }
 
                 mwc-button.edit-profile, mwc-button.discard-changes {
@@ -127,37 +129,14 @@ class AccountDrawer extends FirestoreMixin(DrawerElement) {
 
                 mwc-button.add-address {
                     --mdc-theme-primary: black;
-                    --mdc-border-radius: 24px;
+                }
+
+                single-address {
+                    margin: 4px 0;
                 }
 
                 [hidden] {
                     display: none;
-                }
-
-                single-address, .empty {
-                    font-size: 12px;
-                    border-radius: 5px;
-                    padding: 8px;
-                    text-align: center;
-                    color: black;
-                    margin: 4px 0;
-                    background-color: var(--app-fill-color);
-                    position: relative;
-                    box-sizing: border-box;
-                    transition: all 0.4s ease;
-                    border: 1px solid transparent;
-                    --single-address-icon-display: none;
-                }
-
-                single-address[editing], :host([editing]) .empty {
-                    border-color: var(--app-dark-secondary-color);
-                    --single-address-icon-display: block;
-                }
-
-                single-address[editing]:hover {
-                    border-color: rgba(360, 360, 360, 0.87);
-                    cursor: pointer;
-                    
                 }
             </style>
 
@@ -170,23 +149,23 @@ class AccountDrawer extends FirestoreMixin(DrawerElement) {
 
                         <div class="scrollable">
                             <div class="account-details">
-                                <div class="header">${this.editing ? 'Editing account' : 'Account details'}</div>
+                                <div class="header">${this.editing ? 'Edit account details' : 'Account details'}</div>
                                 <agave-textfield id="userName" ?readonly="${!this.editing}" label="name" class="details" placeholder="${(this.user && this.user.name) ? this.user.name : "add name"}"></agave-textfield>
                                 <agave-textfield type="email" id="userEmail" ?readonly="${!this.editing}" label="email" class="details" placeholder="${(this.user && this.user.email) ? this.user.email : "add email"}"></agave-textfield>
                                 <agave-textfield type="tel" id="userPhone" ?readonly="${!this.editing}" label="phone" class="details" placeholder="${(this.user && this.user.phone) ? this.user.phone : "add phone"}"></agave-textfield>
                             </div>
 
                             <div class="delivery-details">
-                                <div class="address-header">Saved addresses<mwc-button ?hidden="${this.editing}" icon="add" @click="${_ => this._onAddAddress()}" class="add-address" dense outlined>add</mwc-button></div>
+                                <div class="address-header">${this.editing ? 'Edit saved addresses' : 'Saved addresses'}<mwc-button ?hidden="${this.editing}" icon="add" @click="${_ => this._onAddAddress()}" class="add-address" dense outlined>add</mwc-button></div>
                                 ${(this.user && this.user.savedAddresses) ? 
                                     (repeat(this.user.savedAddresses, (curAddress, index) => 
-                                        html `<single-address @address-click="${_ => this._editSingleAddress(curAddress, index)}" @delete-address="${_ => this._deleteSingleAddress(curAddress, index)}" ?editing="${this.editing}" .address="${curAddress}"></single-address>`)) : ''}
-                                    <div class="empty" ?hidden="${this.user && this.user.savedAddresses && this.user.savedAddresses.length}">no addresses found</div>
+                                        html `<single-address ?selected="${this.editing ? this.selectedAddress === index : this.user.selectedAddress === index}" @address-click="${_ => this._onSingleAddressClick(curAddress, index)}" @delete-address="${_ => this._deleteSingleAddress(curAddress, index)}" ?editing="${this.editing}" .address="${curAddress}"></single-address>`)) : ''}
+                                <single-address empty ?hidden="${this.user && this.user.savedAddresses && this.user.savedAddresses.length}"></single-address>
                             </div>
                         </div>                        
 
                         <mwc-button ?hidden="${!this.editing}" @click="${_ => this._onDiscardChanges()}" class="discard-changes">cancel</mwc-button>
-                        <mwc-button ?hidden="${!this.editing}" icon="save" @click="${_ => this._onSaveEdits()}" class="save-edits" unelevated>save changes</mwc-button>
+                        <mwc-button ?hidden="${!this.editing}" icon="save" @click="${_ => this._onSaveEdits()}" class="save-edits" unelevated>${this.waiting ? 'saving...' : 'save changes'}</mwc-button>
                         <mwc-button ?hidden="${this.editing}" icon="edit" @click="${_ => this._onEditProfileClick()}" class="edit-profile">edit profile</mwc-button>
                         <mwc-button ?hidden="${this.editing}" icon="exit_to_app" @click="${_ => this._onSignOutClick()}" class="sign-out" unelevated>log out</mwc-button>
                         <snack-bar class="drawer" ?active="${this._snackbarOpened}">${this._snackbarMessage}</snack-bar>
@@ -200,8 +179,11 @@ class AccountDrawer extends FirestoreMixin(DrawerElement) {
         this.dispatchEvent(new CustomEvent('create-address', {detail: {uid: this.uid}}));
     }
 
-    _editSingleAddress(address, idx) {
-        console.log('editing single address:', address, idx)
+    _onSingleAddressClick(address, idx) {
+        if (!this.editing) return;
+        console.log('on single single address click:', address, idx)
+        this.placeholderSelectedAddress = idx;
+        this.selectedAddress = idx;
     }
 
     _deleteSingleAddress(address, idx) {
@@ -242,6 +224,8 @@ class AccountDrawer extends FirestoreMixin(DrawerElement) {
         this.shadowRoot.getElementById('userName').value = null;
         this.shadowRoot.getElementById('userEmail').value = null;
         this.shadowRoot.getElementById('userPhone').value = null;
+        this.selectedAddress = null;
+        this.placeholderSelectedAddress = null;
     }
 
     _fillInputs() {
@@ -253,6 +237,9 @@ class AccountDrawer extends FirestoreMixin(DrawerElement) {
         }
         if (this.user.phone) {
             this.shadowRoot.getElementById('userPhone').value = this.user.phone;
+        }
+        if (this.user.selectedAddress >= 0) {
+            this.selectedAddress = this.user.selectedAddress;
         }
     }
 
@@ -277,9 +264,14 @@ class AccountDrawer extends FirestoreMixin(DrawerElement) {
     _onSaveEdits() {
         console.log('save edits...')
 
+        if (this.waiting) return;
+
+        this.waiting = true;
+
         let name = this.shadowRoot.getElementById('userName').value;
         let email = this.shadowRoot.getElementById('userEmail').value;
         let phone = this.shadowRoot.getElementById('userPhone').value;
+        let selectedAddress = this.placeholderSelectedAddress;
         
         let updates = {}
         if (name) {
@@ -291,10 +283,18 @@ class AccountDrawer extends FirestoreMixin(DrawerElement) {
         if (phone) {
             updates['phone'] = phone;
         }
+        if (selectedAddress >= 0) {
+            updates['selectedAddress'] = selectedAddress;
+        }
         
         return firebase.firestore().doc(`users/${this.uid}`).update(updates).then(response => {
             this.openSnackbar('Your changes have been saved.')
             this.editing = false;
+        }).catch(err => {
+            console.log('err', err);
+            this.openSnackbar('Unable to save changes, please refresh and try again.')
+        }).then( () => {
+            this.waiting = false;
         });
     }
 

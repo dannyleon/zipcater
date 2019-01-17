@@ -24,6 +24,12 @@ class SingleRestaurant extends LitElement {
                     width: 250px;
                     border-radius: 5px;
                     overflow: hidden;
+                    cursor: pointer;
+                    transition: box-shadow 0.2s;
+                }
+
+                :host(:hover) {
+                    box-shadow: var(--app-card-shadow);
                 }
 
                 img {

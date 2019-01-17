@@ -25,6 +25,12 @@ class SingleItem extends LitElement {
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
+                    cursor: pointer;
+                    transition: box-shadow 0.2s;
+                }
+
+                :host(:hover) {
+                    box-shadow: var(--app-card-shadow);
                 }
 
                 .description {

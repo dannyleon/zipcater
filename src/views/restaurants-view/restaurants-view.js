@@ -70,7 +70,7 @@ class RestaurantsView extends FirestoreMixin(PageViewElement) {
 
             <div class="promo-placeholder">promo placeholder</div>
 
-            <div class="header">Restaurants</div>
+            <div class="header">Categories</div>
             <div class="grid-container">
                 ${this.restaurants ? (repeat(this.restaurants, (restaurant) => html `
                     <single-restaurant @click="${_ => this._onSingleRestaurantClick(restaurant)}" 

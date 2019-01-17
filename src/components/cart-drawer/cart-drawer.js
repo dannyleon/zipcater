@@ -19,7 +19,11 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
             },
             argsArray: Array,
             persistent: Boolean,
-            cartLength: Number
+            cartLength: Number,
+            opened: {
+                type: Boolean,
+                reflect: true
+            }
         }
     }
 
@@ -162,7 +166,8 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
     }
 
     _updateDrawerState(opened) {
-        this.dispatchEvent(new CustomEvent('opened-changed', {detail: {opened: opened}}));
+        console.log('updatting cart drawer state:', opened)
+        this.opened = opened;
     }
 
     _onCheckoutClick() {

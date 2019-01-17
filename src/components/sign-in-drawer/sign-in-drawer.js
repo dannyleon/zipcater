@@ -9,6 +9,7 @@ class SignInDrawer extends DrawerElement {
     static get properties() {
         return {
             persistent: Boolean,
+            waiting: Boolean
         }
     }
 
@@ -79,7 +80,7 @@ class SignInDrawer extends DrawerElement {
                         </div>
                         <agave-textfield id="em" outlined fullWidth label="email"></agave-textfield>
                         <agave-textfield id="pa" outlined fullWidth label="password" type="password"></agave-textfield>
-                        <mwc-button @click="${_ => this._onSignInClick()}" class="sign-in" outlined>sign in</mwc-button>
+                        <mwc-button @click="${_ => this._onSignInClick()}" class="sign-in" outlined>${this.waiting ? 'signing in...' : 'sign in'}</mwc-button>
                         <mwc-button @click="${_ => this._onCreateAccountClick()}" class="create" unelevated>create account</mwc-button>
                         <snack-bar class="drawer" ?active="${this._snackbarOpened}">${this._snackbarMessage}</snack-bar>
                     </div>
@@ -94,6 +95,10 @@ class SignInDrawer extends DrawerElement {
 
     _onSignInClick() {
         console.log('on sign in click...')
+        
+        if (this.waiting) return;
+
+        this.waiting = true;
         let em = this.shadowRoot.querySelector('#em').value;
         let pa = this.shadowRoot.querySelector('#pa').value;
         firebase.auth().signInWithEmailAndPassword(em, pa).then(response => {
@@ -102,6 +107,8 @@ class SignInDrawer extends DrawerElement {
         }).catch(err => {
             console.log('sign in error:', err)
             this.showErrorSnackbar(err.code);
+        }).then( () => {
+            this.waiting = false;
         });
     }
 
