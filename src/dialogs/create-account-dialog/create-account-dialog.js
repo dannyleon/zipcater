@@ -8,7 +8,8 @@ class CreateAccountDialog extends LitElement {
         return {
             _snackbarOpened: Boolean,
             _snackbarMessage: String,
-            waiting: Boolean
+            waiting: Boolean,
+            errorMessage: String
         }
     }
 
@@ -54,12 +55,22 @@ class CreateAccountDialog extends LitElement {
                     display: flex;
                     flex-direction: column;
                 }
+
+                .error-message {
+                    font-size: 12px;
+                    color: var(--app-secondary-color);
+                    margin-left: auto;
+                    text-transform: none;
+                    font-weight: 600;
+                    padding-left: 16px;
+                }
             </style>
 
             <agave-dialog id="dialog">
                 <div class="header" slot="header" main-title>
                     <div class="left">create</div>
                     <div class="right">account</div>
+                    <div class="error-message">${this.errorMessage}</div>
                 </div>
                 <div slot="main" class="main">
                     <agave-textfield errorMessage="Please enter your complete name." name="cna" label="name" type="text"></agave-textfield>
@@ -92,6 +103,7 @@ class CreateAccountDialog extends LitElement {
             singleInput.invalid = false;
         });
         this.waiting = false;
+        this.errorMessage = null;
     }
     
     _onCreateAccountClick() {
@@ -142,8 +154,9 @@ class CreateAccountDialog extends LitElement {
             console.log('user saved to db:', response);
             this.close();
         }).catch(err => {
-            console.log('account creation error:', err)
+            console.log('account creation error:', err);
             this.showErrorSnackbar(err.code);
+            this.waiting = false;
         });
     }
 
@@ -169,10 +182,7 @@ class CreateAccountDialog extends LitElement {
                 errMessage = 'Unable to sign in, please try again or contact support.'
                 break;
         }
-        clearTimeout(this.__snackbarTimer);
-        this._snackbarMessage = errMessage;
-        this._snackbarOpened = true;
-        this.__snackbarTimer = setTimeout(() => { this._snackbarOpened = false }, 3000);
+        this.errorMessage = `Error: ${errMessage}`;
     }
 }
 
