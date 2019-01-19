@@ -10,7 +10,7 @@ class RestaurantsView extends FirestoreMixin(PageViewElement) {
         return {
             restaurants: {
                 type: Array,
-                collection: 'restaurants',
+                collection: 'categories',
                 live: true
             }
         }
@@ -75,7 +75,6 @@ class RestaurantsView extends FirestoreMixin(PageViewElement) {
                 ${this.restaurants ? (repeat(this.restaurants, (restaurant) => html `
                     <single-restaurant @click="${_ => this._onSingleRestaurantClick(restaurant)}" 
                         .name="${restaurant.name}"
-                        .cuisine="${restaurant.cuisine}"
                         .image="${restaurant.image}">
                     </single-restaurant>
                 `)) : ""}

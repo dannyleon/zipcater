@@ -4,10 +4,8 @@ class SingleItem extends LitElement {
     static get properties() {
         return {
             name: String,
-            description: String,
-            ingredients: Array,
-            defaultOption: String,
-            options: Object
+            price: Number,
+            images: String
         }
     }
 
@@ -20,11 +18,12 @@ class SingleItem extends LitElement {
         return html`
             <style>
                 :host {
-                    border-radius: 5px;
-                    padding: 8px;
                     display: flex;
-                    justify-content: space-between;
-                    align-items: center;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    width: 250px;
+                    border-radius: 5px;
+                    overflow: hidden;
                     cursor: pointer;
                     transition: box-shadow 0.2s;
                 }
@@ -33,30 +32,61 @@ class SingleItem extends LitElement {
                     box-shadow: var(--app-card-shadow);
                 }
 
-                .description {
-                    font-size: 12px;
+                img {
+                    width: 250px;
+                    height: 165px;
+                    object-fit: cover;
                 }
 
-                .price {
-                    font-family: 'Roboto Mono', monospace;
+                .info-container {
+                    margin: 8px;
+                }
+
+                .name {
+                    font-size: 20px;
+                }
+
+                .subtitle {
+                    font-size: 12px;
+                    font-weight: 300;
+                }
+
+                @media (max-width: 768px) {
+                    :host {
+                        width: 200px;
+                    }
+
+                    img {
+                        width: 200px;
+                        height: 135px;
+                    }
+
+                    .name {
+                        font-size: 16px;
+                    }
+
+                    .subtitle {
+                        font-size: 10px;
+                    }
+                }
+
+                @media (max-width: 460px) {
+                    :host {
+                        width: 100%;
+                    }
+
+                    img {
+                        width: 100%;
+                    }
                 }
             </style>
-            
-            <div>
+
+            <img src="${(this.images && this.images.length) ? this.images[0] : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='}">
+            <div class="info-container">
                 <div class="name">${this.name}</div>
-                <div class="description">${this._computeIngredients(this.ingredients)}</div>
+                <div class="subtitle">${this.price}</div>
             </div>
-            <div class="price">${this._computePrice(this.defaultOption, this.options)}</div>
         `;
-    }
-
-    _computeIngredients(ingredients) {
-        if (ingredients) return ingredients.join(', ')
-    }
-
-    _computePrice(defaultOption, options) {
-        let rawPrice = options[defaultOption];
-        return `$${rawPrice.toFixed(2)}`;
     }
 
 }

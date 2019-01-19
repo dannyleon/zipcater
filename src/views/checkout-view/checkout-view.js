@@ -233,7 +233,7 @@ class CheckoutView extends FirestoreMixin(PageViewElement) {
         var items = cart.items;
         let total = Object.keys(items).reduce((acc, cur) => {
             let curItem = items[cur];
-            return acc + curItem.options[curItem.defaultOption];
+            return acc + parseFloat(curItem.price);
         }, 0);
         return total;
     }
