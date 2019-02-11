@@ -14,12 +14,12 @@ class MenuView extends FirestoreMixin(PageViewElement) {
             categories: Array,
             restaurant: {
                 type: Object,
-                doc: 'restaurants/{uid}',
+                doc: 'categories/{uid}',
                 live: true
             },
             menu: {
                 type: Array,
-                collection: 'restaurants/{uid}/menu',
+                collection: 'categories/{uid}/products',
                 live: true
             },
             argsArray: Array
@@ -68,10 +68,12 @@ class MenuView extends FirestoreMixin(PageViewElement) {
                     font-size: 40px;
                     font-family: 'Roboto Mono', monospace;
                     line-height: 1;
+                    text-transform: capitalize;
                 }
 
                 .restaurant-details .description {
                     font-size: 18px;
+                    margin-top: 12px;
                 }
 
                 .restaurant-details .cuisine {
@@ -132,10 +134,6 @@ class MenuView extends FirestoreMixin(PageViewElement) {
                         width: 100%;
                     }
 
-                    .header {
-                        display: none;
-                    }
-
                     .category-tabs {
                         flex: 1;
                         justify-content: space-around;
@@ -154,28 +152,20 @@ class MenuView extends FirestoreMixin(PageViewElement) {
                 </div>
                 <div class="restaurant-details">
                     <span class="name">${this.restaurant ? this.restaurant.name : ""}</span>
-                    <span class="cuisine">${this.restaurant ? this.restaurant.cuisine : ""}</span>
                     <span class="description">${this.restaurant ? this.restaurant.description : ""}</span>
                 </div>
             </div>
             
             <div class="category-toolbar">
-                <div class="header">Menu</div>
-                <nav class="category-tabs">
-                    ${this.categories ? (repeat(this.categories, category => html `
-                        <mwc-tab @click="${_ => this._onTabClick(category)}" selected="${this.selectedCategory === category}">${category}</mwc-tab>
-                    `)) : ""}
-                </nav>
+                <div class="header">Products</div>
             </div>
 
             <div class="grid-container">
-                ${this.menu ? (repeat(this._filterMenu(this.menu, this.selectedCategory), (item) => html `
+                ${this.menu ? (repeat(this.menu, (item) => html `
                     <single-item @click="${_ => this._onSingleItemClick(item, this.uid)}" 
                         .name="${item.name}"
-                        .description="${item.description}"
-                        .ingredients="${item.ingredients}"
-                        .defaultOption="${item.defaultOption}"
-                        .options="${item.options}">
+                        .price="${item.price}"
+                        .images="${item.images}"
                     </single-item>
                 `)) : ""}
             </div>

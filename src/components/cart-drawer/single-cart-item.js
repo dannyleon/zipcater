@@ -52,7 +52,7 @@ class SingleCartItem extends LitElement {
             
             <div>${this.item.quantity} x</div>
             <div class="name">${this.item.name}</div>
-            <div class="price">$${(this.item.options[this.item.defaultOption]).toFixed(2)}</div>
+            <div class="price">$${this.item.price}</div>
             <i @click="${_ => this._onRemoveItemClick()}">${minusIcon}</i>
         `;
     }

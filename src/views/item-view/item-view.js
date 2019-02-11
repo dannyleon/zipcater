@@ -12,7 +12,7 @@ class ItemView extends FirestoreMixin(PageViewElement) {
             quantity: Number,
             item: {
                 type: Object,
-                doc: 'restaurants/{uid}/menu/{iid}',
+                doc: 'categories/{uid}/products/{iid}',
                 live: true
             },
             argsArray: Array
@@ -34,8 +34,8 @@ class ItemView extends FirestoreMixin(PageViewElement) {
 
                 img {
                     width: 400px;
-                    height: 265px;
-                    object-fit: cover;
+                    height: 400px;
+                    object-fit: contain;
                     border-radius: 5px;
                     background-color: var(--app-dark-primary-color);
                 }
@@ -59,6 +59,7 @@ class ItemView extends FirestoreMixin(PageViewElement) {
 
                 .description {
                     margin-top: 24px;
+                    margin-bottom: 24px;
                     font-size: 18px;
                 }
 
@@ -131,7 +132,7 @@ class ItemView extends FirestoreMixin(PageViewElement) {
                     <div class="description">${this.item ? this.item.description : ""}</div>
 
                     <div class="button-container">
-                        <div class="price">${this._computePrice(this.item)}</div>
+                        <div class="price">${this.item ? this.item.price : ""}</div>
                         <mwc-button @click="${_ => this._onAddToCartClick(this.item, this.quantity)}" raised>add to cart</mwc-button>
                     </div>
                 </div>
@@ -166,7 +167,7 @@ class ItemView extends FirestoreMixin(PageViewElement) {
 
     _computeImageSrc(obj) {
         console.log('computing img src:', obj)
-        return ((obj && obj.image) ? obj.image : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=');
+        return ((obj && obj.images && obj.images.length) ? obj.images[0] : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=');
     }
 
     _computeIngredients(item) {

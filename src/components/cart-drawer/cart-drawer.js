@@ -181,7 +181,7 @@ class CartDrawer extends FirestoreMixin(DrawerElement) {
         var items = cart.items;
         let total = Object.keys(items).reduce((acc, cur) => {
             let curItem = items[cur];
-            return acc + curItem.options[curItem.defaultOption];
+            return acc + parseFloat(curItem.price);
         }, 0);
         return `$${total.toFixed(2)}`;
     }
