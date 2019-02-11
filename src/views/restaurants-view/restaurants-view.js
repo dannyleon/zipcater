@@ -43,6 +43,7 @@ class RestaurantsView extends FirestoreMixin(PageViewElement) {
                     width: 100%;
                     height: 200px;
                     background-color: gray;
+                    color: white;
                     border-radius: 5px;
 
                     display: flex;
