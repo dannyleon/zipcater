@@ -197,7 +197,7 @@ class MyApp extends LitElement {
       <app-toolbar class="toolbar-top">
         <div class="main-title">
           <button @click="${_ => this._homeButtonClick()}">
-              <div class="left">maro</div><div class="right">autoparts</div>
+              <div class="left">zip</div><div class="right">cater</div>
           </button>
         </div>
         <mwc-button ?hidden="${_wideLayout && !signedIn}" icon="account_box" @click="${_ => this._updateDrawerState(true, signedIn)}" class="profile-icon" dense outlined>${signedIn ? 'account' : 'sign in'}</mwc-button>
